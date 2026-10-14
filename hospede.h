@@ -25,3 +25,5 @@ int consultaHospede(int id, int tipo); //id: código ou documento - tipo: 1= có
 int cadastraHospede(int codigo, char* nome, int documento, int telefone);
 void listaHospedes();
 int alteraHospede(int id, int tipo);
+
+#endif

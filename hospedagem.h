@@ -31,3 +31,5 @@ typedef struct cadeiaHospedagem{
 void listaHospedagens(int status);
 int checkIn(int hospede, int quarto, int data, int hora, int diarias);
 int checkOut(int hospede, int quarto, int data, int hora);
+
+#endif
