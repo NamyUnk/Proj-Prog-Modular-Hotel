@@ -1,7 +1,7 @@
 #ifndef QUARTO_H
 #define QUARTO_H
 
-#define LIM_QUARTOS = 50
+#define LIM_QUARTOS 50
 
 typedef struct quarto{
 
@@ -11,6 +11,13 @@ typedef struct quarto{
     int status; //status: 0= vazio, 1= ocupado
     
 } quarto;
+
+typedef struct cadeiaQuarto{
+
+    quarto* quarto;
+    struct cadeiaQuarto* prox;
+
+} cadeiaQuarto;
 
 int consultaQuarto(int num);
 int cadastraQuarto(int num, int tipo, int valor); //status sempre vazio quando criado

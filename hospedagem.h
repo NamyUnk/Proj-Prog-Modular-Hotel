@@ -1,7 +1,7 @@
 #ifndef HOSPEDAGEM_H
 #define HOSPEDAGEM_H
 
-#define LIM_HOSPEDAGENS = 500
+#define LIM_HOSPEDAGENS 500
 
 #include "hospede.h"
 #include "quarto.h"
@@ -21,7 +21,13 @@ typedef struct hospedagem{
 
 } hospedagem;
 
+typedef struct cadeiaHospedagem{
+
+    hospedagem* hospedagem;
+    struct cadeiaHospedagem* prox;
+
+} cadeiaHospedagem;
+
 void listaHospedagens(int status);
 int checkIn(int hospede, int quarto, int data, int hora, int diarias);
 int checkOut(int hospede, int quarto, int data, int hora);
-
