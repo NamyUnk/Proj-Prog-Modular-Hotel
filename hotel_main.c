@@ -16,7 +16,6 @@ Vinicius Silberman Pereira -- 2510569
 #include "quarto.h"
 
 cadeiaHospede* hospedes = NULL;
-cadeiaHospedagem* hospedagens = NULL;
 
 int main(void){
 
