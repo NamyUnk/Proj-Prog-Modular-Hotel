@@ -80,6 +80,7 @@ int total = 0;
 }
 
 int consultaHospede(int id, int tipo) {
+    
     if (tipo != 1 && tipo != 2) {
         printf("\nTipo de consulta inválido! Use 1 para Código ou 2 para Documento.\n");
         return 2;

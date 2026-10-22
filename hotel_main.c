@@ -15,11 +15,13 @@ Vinicius Silberman Pereira -- 2510569
 #include "hospede.h"
 #include "quarto.h"
 
-cadeiaQuarto** pQuartos = NULL;
 cadeiaHospede* hospedes = NULL;
 cadeiaHospedagem* hospedagens = NULL;
 
 int main(void){
+
+    //inicialização:
+    int lQ = loadQuarto();
 
     printf("Bem vindo ao sistema de gerenciamento de hotéis.\nSelecione qual ação gostaria de realizar:\n\n"
         "\tExemplo: AÇÃO --- BOTÃO\n\n"

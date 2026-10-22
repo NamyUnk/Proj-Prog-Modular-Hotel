@@ -3,25 +3,14 @@
 
 #define LIM_QUARTOS 50
 
-typedef struct quarto{
+int loadQuarto();
+int fechaQuarto();
 
-    int num;
-    int tipo; //tipo: 0= suite, 1= solteiro, 2= casal
-    float valor;
-    int status; //status: 0= vazio, 1= ocupado
-    
-} quarto;
+int statusQuarto(int num); //retorna status do quarto
+int diariaQuarto(int num,float* diaria); //passa o valor da diaria pelo parametro int* diaria
 
-typedef struct cadeiaQuarto{
-
-    quarto* quarto;
-    struct cadeiaQuarto* prox;
-
-} cadeiaQuarto;
-
-cadeiaQuarto* buscaQuarto(int num, cadeiaQuarto* cabeca);
-int consultaQuarto(int num, cadeiaQuarto* cabeca);
-cadeiaQuarto* cadastraQuarto(int num, int tipo, float valor, cadeiaQuarto* cabeca); //status sempre vazio quando criado
-void listaQuartos(int modo, cadeiaQuarto* cabeca); //modo: 0= livres, 1= todos
+int consultaQuarto(int num); //imprime as informações do quarto
+int cadastraQuarto(int num, int tipo, float valor); //status sempre vazio quando criado
+int listaQuartos(int modo); //modo: 0= livres, 1= todos
 
 #endif
