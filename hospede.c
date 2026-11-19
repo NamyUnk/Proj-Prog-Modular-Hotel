@@ -3,181 +3,122 @@
 #include <string.h>
 #include "hospede.h"
 
-/*
-codigos de retorno das funcoes PRA USAR NA MAIN QUANDO ESTIVER PRONTA:
-0 = sucesso na operacao
-1 = codigo invalido (precisa ser inteiro positivo maior que zero)
-2 = hospede duplicado (codigo ou documento ja cadastrado no sistema)
-3 = limite atingido (atingiu a capacidade maxima de lim_hospedes)
-4 = erro de alocacao de memoria (malloc falhou ao tentar alocar)
-*/
+/* copia a string pra memoria dinamica, devolve NULL se falhar */
+static char* copiaTexto(const char* origem) {
+    char* copia = (char*)malloc(strlen(origem) + 1);
+    if (copia) strcpy(copia, origem);
+    return copia;
+}
 
-extern cadeiaHospede* hospedes; //variavel global pra hospedes (será criada na main)
-
-int cadastraHospede(int codigo, char* nome, int documento, int telefone) {
-    if (codigo <= 0) {
-        printf("\nO código do hóspede precisa de ser um inteiro positivo.\n");
-        return 1;
-    }
-                
-cadeiaHospede* atual = hospedes; // verifica hospedes duplicados e o limite max
-int total = 0;
-
-    while (atual) { //enquanto houverem hospedes:
-        if (atual->hospede) {
-            if (atual->hospede->codigo == codigo) {
-                printf("\njá existe um hóspede registado com esse código %d.\n", codigo);
-                return 2;
-            }
-            if (atual->hospede->documento == documento) {
-                printf("\nJá existe um hóspede registado com o documento %d.\n", documento);
-                return 2;
-            }
+/* procura um hospede por codigo (tipo 1) ou documento (tipo 2) */
+static hospede* buscaHospede(cadeiaHospede* lista, int id, int tipo) {
+    while (lista) {
+        if (lista->hospede) {
+            if (tipo == 1 && lista->hospede->codigo == id) return lista->hospede;
+            if (tipo == 2 && lista->hospede->documento == id) return lista->hospede;
         }
-        total++;
-        atual = atual->prox;
+        lista = lista->prox;
     }
+    return NULL;
+}
 
-    if (total >= LIM_HOSPEDES) {
-        printf("\nLimite máximo de hóspedes atingido (%d).\n", LIM_HOSPEDES);
-        return 3;
-    }
+int cadastraHospede(cadeiaHospede** lista, int codigo, char* nome, int documento, int telefone) {
+    if (codigo <= 0) return 1;
 
-    cadeiaHospede* novoNo = (cadeiaHospede*)malloc(sizeof(cadeiaHospede)); // alocando o nó da lista
-    if (!novoNo) {
-        printf("\nErro ao alocar memória para o nó do hóspede.\n");
-        return 4;
-    }
+    if (buscaHospede(*lista, codigo, 1) || buscaHospede(*lista, documento, 2)) return 2;
 
-    novoNo->hospede = (hospede*)malloc(sizeof(hospede)); // alocando a struct do hospede
+    int total = 0;
+    for (cadeiaHospede* p = *lista; p; p = p->prox) total++;
+    if (total >= LIM_HOSPEDES) return 3;
+
+    cadeiaHospede* novoNo = (cadeiaHospede*)malloc(sizeof(cadeiaHospede));
+    if (!novoNo) return 4;
+
+    novoNo->hospede = (hospede*)malloc(sizeof(hospede));
     if (!novoNo->hospede) {
         free(novoNo);
-        printf("\nErro ao alocar memória para os dados do hóspede.\n");
         return 4;
     }
 
-    //valores:
+    novoNo->hospede->nome = NULL;
+    if (nome) {
+        novoNo->hospede->nome = copiaTexto(nome);
+        if (!novoNo->hospede->nome) {
+            free(novoNo->hospede);
+            free(novoNo);
+            return 4;
+        }
+    }
+
     novoNo->hospede->codigo = codigo;
     novoNo->hospede->documento = documento;
     novoNo->hospede->telefone = telefone;
 
-    if (nome) {
-        novoNo->hospede->nome = (char*)malloc(strlen(nome) + 1);
-        if (novoNo->hospede->nome) {
-            strcpy(novoNo->hospede->nome, nome);
-        } else {
-            novoNo->hospede->nome = NULL;
-        }
-    } else {
-        novoNo->hospede->nome = NULL;
-    }
-
-    novoNo->prox = hospedes; //insere no inicio da lista
-    hospedes = novoNo;
-
-    printf("\nHóspede %s registado com sucesso!\n", nome ? nome : ""); //exibição do nome e mensagem de sucesso
+    novoNo->prox = *lista; /* insere no inicio */
+    *lista = novoNo;
     return 0;
 }
 
-int consultaHospede(int id, int tipo) {
-    
-    if (tipo != 1 && tipo != 2) {
-        printf("\nTipo de consulta inválido! Use 1 para Código ou 2 para Documento.\n");
-        return 2;
-    }
+int consultaHospede(cadeiaHospede* lista, int id, int tipo) {
+    if (tipo != 1 && tipo != 2) return 2;
 
-    cadeiaHospede* atual = hospedes;
+    hospede* h = buscaHospede(lista, id, tipo);
+    if (!h) return 1;
 
-    while (atual) { //percorre a lista de hospedes 
-        if (atual->hospede) {
-            int encontrado = 0;
-            if (tipo == 1 && atual->hospede->codigo == id) encontrado = 1;
-            if (tipo == 2 && atual->hospede->documento == id) encontrado = 1;
-
-            if (encontrado) { //exibe os dados do hospede pedido
-                printf("\n--- Dados do Hóspede ---\n");
-                printf("Código: %d\n", atual->hospede->codigo);
-                printf("Nome: %s\n", atual->hospede->nome ? atual->hospede->nome : "N/D");
-                printf("Documento: %d\n", atual->hospede->documento);
-                printf("Telefone: %d\n", atual->hospede->telefone);
-                return 0;
-            }
-        }
-        atual = atual->prox;
-    }
-
-    printf("\nHóspede não encontrado.\n");
-    return 1;
+    printf("\n--- dados do hospede ---\n");
+    printf("codigo: %d\n", h->codigo);
+    printf("nome: %s\n", h->nome ? h->nome : "N/D");
+    printf("documento: %d\n", h->documento);
+    printf("telefone: %d\n", h->telefone);
+    return 0;
 }
 
-void listaHospedes() {
-    cadeiaHospede* atual = hospedes;
-
-    if (!atual) {
-        printf("\nNão existem hóspedes registados no sistema.\n");
+void listaHospedes(cadeiaHospede* lista) {
+    if (!lista) {
+        printf("\nnao existem hospedes registados\n");
         return;
     }
 
-    printf("\n--- Lista de Hóspedes ---\n\n");
-    while (atual) {
-        if (atual->hospede) {
-            printf("Código: %d\tNome: %s\tDocumento: %d\tTelefone: %d\n",
-                   atual->hospede->codigo,
-                   atual->hospede->nome ? atual->hospede->nome : "N/D",
-                   atual->hospede->documento,
-                   atual->hospede->telefone);
+    printf("\n--- lista de hospedes ---\n\n");
+    while (lista) {
+        if (lista->hospede) {
+            printf("codigo: %d\tnome: %s\tdocumento: %d\ttelefone: %d\n",
+                   lista->hospede->codigo,
+                   lista->hospede->nome ? lista->hospede->nome : "N/D",
+                   lista->hospede->documento,
+                   lista->hospede->telefone);
         }
-        atual = atual->prox;
+        lista = lista->prox;
     }
 }
 
-int alteraHospede(int id, int tipo) {
-    if (tipo != 1 && tipo != 2) {
-        printf("\nTipo inválido! Use 1 para Código ou 2 para Documento.\n");
-        return 2;
+int alteraHospede(cadeiaHospede* lista, int id, int tipo, char* novoNome, int novoTelefone) {
+    if (tipo != 1 && tipo != 2) return 2;
+
+    hospede* h = buscaHospede(lista, id, tipo);
+    if (!h) return 1;
+
+    if (novoNome) {
+        char* copia = copiaTexto(novoNome);
+        if (!copia) return 4; /* mantem o nome antigo se falhar */
+        free(h->nome);
+        h->nome = copia;
     }
 
-    cadeiaHospede* atual = hospedes;
+    h->telefone = novoTelefone;
+    return 0;
+}
 
+void liberaHospedes(cadeiaHospede** lista) {
+    cadeiaHospede* atual = *lista;
     while (atual) {
+        cadeiaHospede* prox = atual->prox;
         if (atual->hospede) {
-            int encontrado = 0;
-            if (tipo == 1 && atual->hospede->codigo == id) encontrado = 1;
-            if (tipo == 2 && atual->hospede->documento == id) encontrado = 1;
-
-            if (encontrado) {
-                char novoNome[100];
-                int novoTelefone;
-
-                printf("\nHóspede encontrado: %s (Código: %d)\n", 
-                       atual->hospede->nome ? atual->hospede->nome : "N/D", 
-                       atual->hospede->codigo);
-
-                printf("Introduza o novo nome: ");
-                scanf(" %[^\n]", novoNome);
-
-                printf("Introduza o novo telefone: ");
-                scanf("%d", &novoTelefone);
-
-                if (atual->hospede->nome) { //libera a memoria do nome antigo alocado dinamicamente
-                    free(atual->hospede->nome);
-                }
-                atual->hospede->nome = (char*)malloc(strlen(novoNome) + 1); //aloca um novo
-                if (atual->hospede->nome) {
-                    strcpy(atual->hospede->nome, novoNome);
-                }
-
-                atual->hospede->telefone = novoTelefone;
-
-                printf("\nDados do hóspede alterados com sucesso!\n");
-                return 0;
-            }
+            free(atual->hospede->nome);
+            free(atual->hospede);
         }
-        atual = atual->prox;
+        free(atual);
+        atual = prox;
     }
-
-    printf("\nHóspede não encontrado para alteração.\n");
-    return 1;
-
-
+    *lista = NULL;
 }
