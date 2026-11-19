@@ -12,13 +12,15 @@ codigos de retorno das funcoes PRA USAR NA MAIN QUANDO ESTIVER PRONTA:
 4 = erro de alocacao de memoria (malloc falhou ao tentar alocar)
 */
 
-int cadastraHospede(cadeiaHospede** lista, int codigo, char* nome, int documento, int telefone) {
+extern cadeiaHospede* hospedes; //variavel global pra hospedes (será criada na main)
+
+int cadastraHospede(int codigo, char* nome, int documento, int telefone) {
     if (codigo <= 0) {
         printf("\nO código do hóspede precisa de ser um inteiro positivo.\n");
         return 1;
     }
                 
-cadeiaHospede* atual = *lista; // verifica hospedes duplicados e o limite max
+cadeiaHospede* atual = hospedes; // verifica hospedes duplicados e o limite max
 int total = 0;
 
     while (atual) { //enquanto houverem hospedes:
@@ -70,21 +72,21 @@ int total = 0;
         novoNo->hospede->nome = NULL;
     }
 
-    novoNo->prox = *lista; //insere no inicio da lista
-    *lista = novoNo;
+    novoNo->prox = hospedes; //insere no inicio da lista
+    hospedes = novoNo;
 
     printf("\nHóspede %s registado com sucesso!\n", nome ? nome : ""); //exibição do nome e mensagem de sucesso
     return 0;
 }
 
-int consultaHospede(cadeiaHospede* lista, int id, int tipo) {
+int consultaHospede(int id, int tipo) {
     
     if (tipo != 1 && tipo != 2) {
         printf("\nTipo de consulta inválido! Use 1 para Código ou 2 para Documento.\n");
         return 2;
     }
 
-    cadeiaHospede* atual = lista;
+    cadeiaHospede* atual = hospedes;
 
     while (atual) { //percorre a lista de hospedes 
         if (atual->hospede) {
@@ -108,8 +110,8 @@ int consultaHospede(cadeiaHospede* lista, int id, int tipo) {
     return 1;
 }
 
-void listaHospedes(cadeiaHospede* lista) {
-    cadeiaHospede* atual = lista;
+void listaHospedes() {
+    cadeiaHospede* atual = hospedes;
 
     if (!atual) {
         printf("\nNão existem hóspedes registados no sistema.\n");
@@ -129,13 +131,13 @@ void listaHospedes(cadeiaHospede* lista) {
     }
 }
 
-int alteraHospede(cadeiaHospede* lista, int id, int tipo) {
+int alteraHospede(int id, int tipo) {
     if (tipo != 1 && tipo != 2) {
         printf("\nTipo inválido! Use 1 para Código ou 2 para Documento.\n");
         return 2;
     }
 
-    cadeiaHospede* atual = lista;
+    cadeiaHospede* atual = hospedes;
 
     while (atual) {
         if (atual->hospede) {
