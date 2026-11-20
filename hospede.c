@@ -181,3 +181,163 @@ int alteraHospede(int id, int tipo) {
 
 
 }
+
+int loadHospede() {
+
+    /* retornos:
+    0 = sucesso
+    1 = arquivo nulo
+    2 = erro alocacao de memoria
+    3 = erro de leitura
+    */
+
+    FILE* arquivo = fopen("hospede.bin", "rb");
+
+    if (!arquivo) {
+
+        printf("\nErro ao abrir o arquivo para leitura!\n");
+
+        return 1;
+    }
+
+    int codigo, documento, telefone, tamanho;
+    cadeiaHospede* novo;
+    cadeiaHospede* atual = hospedes;
+
+    while (atual && atual->prox) atual = atual->prox; //vai ate o fim da lista
+
+    while (fread(&codigo, sizeof(int), 1, arquivo) == 1) {
+
+        //o nome e um ponteiro, entao e salvo separado: tamanho (com o \0) e depois os caracteres
+        if (fread(&documento, sizeof(int), 1, arquivo) != 1 ||
+            fread(&telefone, sizeof(int), 1, arquivo) != 1 ||
+            fread(&tamanho, sizeof(int), 1, arquivo) != 1 || tamanho < 0) {
+
+            printf("\nErro ao ler o arquivo!\n");
+            fclose(arquivo);
+
+            return 3;
+        }
+
+        novo = malloc(sizeof(cadeiaHospede));
+
+        if (!novo) {
+
+            printf("\nErro ao alocar memória para o nó!\n");
+            fclose(arquivo);
+
+            return 2;
+        }
+
+        novo->hospede = malloc(sizeof(hospede));
+
+        if (!novo->hospede) {
+
+            free(novo);
+            printf("\nErro ao alocar memória para o hóspede!\n");
+            fclose(arquivo);
+
+            return 2;
+        }
+
+        novo->hospede->nome = NULL; //tamanho 0 = hospede sem nome
+
+        if (tamanho > 0) {
+
+            novo->hospede->nome = malloc(tamanho);
+
+            if (!novo->hospede->nome) {
+
+                free(novo->hospede);
+                free(novo);
+                printf("\nErro ao alocar memória para o nome!\n");
+                fclose(arquivo);
+
+                return 2;
+            }
+
+            if (fread(novo->hospede->nome, 1, tamanho, arquivo) != (size_t)tamanho) {
+
+                free(novo->hospede->nome);
+                free(novo->hospede);
+                free(novo);
+                printf("\nErro ao ler o arquivo!\n");
+                fclose(arquivo);
+
+                return 3;
+            }
+
+            novo->hospede->nome[tamanho - 1] = '\0';
+        }
+
+        novo->hospede->codigo = codigo;
+        novo->hospede->documento = documento;
+        novo->hospede->telefone = telefone;
+        novo->prox = NULL;
+
+        if (hospedes == NULL) hospedes = novo;
+        else atual->prox = novo;
+
+        atual = novo;
+    }
+
+    if (ferror(arquivo)) {
+        printf("\nErro ao ler o arquivo!\n");
+        fclose(arquivo);
+        return 3;
+    }
+
+    fclose(arquivo);
+
+    printf("\nHóspedes carregados com sucesso!\n");
+
+    return 0;
+}
+
+int fechaHospede() {
+
+    /* retornos:
+    0 = sucesso
+    1 = arquivo nao abriu
+    2 = erro ao salvar
+    */
+
+    FILE* arquivo = fopen("hospede.bin", "wb");
+
+    if (!arquivo) {
+
+        printf("\nErro ao abrir o arquivo para escrita!\n");
+
+        return 1;
+    }
+
+    cadeiaHospede* atual = hospedes;
+
+    while (atual != NULL) {
+
+        if (atual->hospede) {
+
+            int tamanho = atual->hospede->nome ? (int)strlen(atual->hospede->nome) + 1 : 0; //0 = sem nome
+
+            if (fwrite(&atual->hospede->codigo, sizeof(int), 1, arquivo) != 1 ||
+                fwrite(&atual->hospede->documento, sizeof(int), 1, arquivo) != 1 ||
+                fwrite(&atual->hospede->telefone, sizeof(int), 1, arquivo) != 1 ||
+                fwrite(&tamanho, sizeof(int), 1, arquivo) != 1 ||
+                (tamanho > 0 && fwrite(atual->hospede->nome, 1, tamanho, arquivo) != (size_t)tamanho)) {
+
+                printf("\nErro ao salvar os hóspedes no arquivo!\n");
+                fclose(arquivo);
+
+                return 2;
+            }
+        }
+
+        atual = atual->prox;
+    }
+
+    fclose(arquivo);
+
+    printf("\nHóspedes salvos com sucesso!\n");
+
+    return 0;
+}
