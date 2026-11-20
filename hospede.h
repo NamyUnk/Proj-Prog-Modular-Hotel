@@ -26,4 +26,7 @@ int cadastraHospede(int codigo, char* nome, int documento, int telefone);
 void listaHospedes();
 int alteraHospede(int id, int tipo);
 
+int loadHospede();
+int fechaHospede();
+
 #endif
