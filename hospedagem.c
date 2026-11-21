@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "hospedagem.h"
 #include "hospede.h"
@@ -9,10 +11,8 @@ typedef struct hospedagem{
     HP_STATUS status;
     int hospede; 
     int quarto;
-    data_S dataEntrada;
-    horario_S horaEntrada;
-    data_S dataSaida;
-    Hhrario_S horaSaida;
+    horario_S entrada;
+    horario_S saida;
     int diarias_reservadas;
     int diarias_efetivas;
     float valorTotal;
@@ -20,11 +20,11 @@ typedef struct hospedagem{
 } hospedagem_S;
 
 typedef struct cadeiaHospedagem{
-    Hospedagem* hospedagem;
+    hospedagem_S* hospedagem;
     struct cadeiaHospedagem* prox;
 } cadeiaHospedagem_S;
 //amem ao static
-static cadeiaHospedagem* cabeca = NULL;
+static cadeiaHospedagem_S* cabeca = NULL;
 static int totalHospedagens = 0;
 
 
@@ -33,7 +33,7 @@ static void imprimeHorario(horario_S h)
     //n ia fazer uma só pra isso mas usei tanto que achei melhor
     printf("%02d/%02d/%04d %02d:%02d", h.dia, h.mes, h.ano, h.hora, h.minuto);
 }
-static void imprimeHospedagem(const hospedagem* h){
+static void imprimeHospedagem(const hospedagem_S* h){
    char nome[100];
  
     printf("Hospedagem %d | Hospede: ", h->codigo);
@@ -48,27 +48,157 @@ static void imprimeHospedagem(const hospedagem* h){
     if (h->status == HP_ENCERRADA) {
         printf(" | Saida: ");
         imprimeHorario(h->saida);
-        printf(" | Diarias: %d | Total: R$ %.2f", h->diariasEfetivas, h->valorTotal);} 
-    else {printf(" | Diarias previstas: %d", h->diariasReservadas);}
+        printf(" | Diarias: %d | Total: R$ %.2f", h->diarias_efetivas, h->valorTotal);} 
+    else {printf(" | Diarias previstas: %d", h->diarias_reservadas);}
  
     printf("\n");
 }
+static int ehBissexto(int ano){
+    return (ano % 4 == 0 && ano % 100 != 0) || ano % 400 == 0;
+}
 static int horarioValido(horario_S h){
-    //fevereiro NAO PODE ter 28 dias blz?
-    int diasNoMes[] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (h.mes < 1 || h.mes > 12||h.dia < 1 || h.dia > diasNoMes[h.mes - 1])
+    //fevereiro so tem 29 dias em ano bissexto blz?
+    int diasNoMes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (h.mes == 2 && ehBissexto(h.ano))
+        diasNoMes[1] = 29;
+    if (h.ano < 1900 || h.mes < 1 || h.mes > 12||h.dia < 1 || h.dia > diasNoMes[h.mes - 1])
         return 0;
     if(h.hora >= 0 && h.hora < 24 && h.minuto >= 0 && h.minuto < 60)
     return 1;
+    return 0;
+}
+/* Converte a data no numero de dias desde um ponto fixo do calendario
+ * (ignora hora e minuto). A diferenca entre duas conversoes e a quantidade
+ * de dias entre as datas. O "ano" comeca em marco, entao fevereiro vira o
+ * ultimo mes e o dia extra do bissexto cai no fim. */
+static long diaAbsoluto(horario_S h){
+    long a = h.ano;
+    long m = h.mes;
+    if (m <= 2) {
+        a--;
+        m += 12;
+    }
+    return 365 * a + a / 4 - a / 100 + a / 400 + (153 * (m - 3) + 2) / 5 + h.dia;
+}
+/* Mesma ideia, em minutos: permite comparar entrada e saida com a hora */
+static long minutoAbsoluto(horario_S h){
+    return diaAbsoluto(h) * 1440L + h.hora * 60L + h.minuto;
+}
+/* Devolve a hospedagem ATIVA do hospede, ou NULL se nao houver */
+static hospedagem_S* buscaAtivaPorHospede(int codHospede){
+    cadeiaHospedagem_S* p;
+    for (p = cabeca; p != NULL; p = p->prox)
+        if (p->hospedagem->status == HP_ATIVA && p->hospedagem->hospede == codHospede)
+            return p->hospedagem;
+    return NULL;
 }
 
 
 
 
-
-
  
-HP_RET filtraHospedagens(HP_STATUS status){
+HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
+    //funçao da checagem desesperada o incio
+    hospedagem_S* h;
+    cadeiaHospedagem_S* no;
+    float valorDiaria = 0.0f;
+    //ve se o hospede tá de boa
+    if(verificaHospede(nHospede) != HOS_OK)
+        return HP_HOSPEDE_INEXISTENTE;
+    if (buscaAtivaPorHospede(nHospede) != NULL)
+        return HP_HOSPEDE_JA_HOSPEDADO; 
+
+    QUA_CondRet disponibilidade= verificaDisponibilidade(nQuarto);
+    //vê se o quarto ta de boa
+    if (disponibilidade == QUA_INEXISTENTE)
+        return HP_QUARTO_INEXISTENTE;
+    if (disponibilidade != QUA_OK)
+        return HP_QUARTO_OCUPADO;    
+    if (obtemValorDiaria(nQuarto, &valorDiaria) != QUA_OK)
+        return HP_ERRO_QUARTO;
+    //vê se as diarias tao de boa
+    if (diarias <= 0)
+        return HP_DIARIAS_INVALIDAS;
+    //vê se o horario ta boa (meu deus)
+    if (!horarioValido(entrada))
+        return HP_DATA_INVALIDA;
+    //ve se tem espaço no hotel
+    if (totalHospedagens >= LIM_HOSPEDAGENS)
+        return HP_LIMITE_ATINGIDO;
+
+    h  = malloc(sizeof(hospedagem_S));
+    no = malloc(sizeof(cadeiaHospedagem_S));
+    if (h == NULL || no == NULL) {
+        free(h);                                       
+        free(no);
+        return HP_ERRO_MEMORIA;
+    }
+ 
+    if (ocupaQuarto(nQuarto) != QUA_OK) {
+        free(h);
+        free(no);
+        return HP_ERRO_QUARTO;
+    }
+    //preenchendo de fato
+    h->codigo             = totalHospedagens+1;
+    h->status             = HP_ATIVA;
+    h->hospede            = nHospede;
+    h->quarto             = nQuarto;
+    h->entrada            = entrada;                
+    h->diarias_reservadas = diarias;
+    h->diarias_efetivas   = 0;
+    h->valorTotal         = diarias*valorDiaria;
+ 
+    //colocando na lista
+    no->hospedagem = h;
+    no->prox = cabeca;
+    cabeca = no;
+    totalHospedagens++;
+ 
+    return HP_OK;
+}
+
+HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
+    hospedagem_S* h;
+    float valorDiaria;
+    long diarias;
+    //essa segue o mesmo principio da anterior
+    if (verificaHospede(hospede) != HOS_OK)
+        return HP_HOSPEDE_INEXISTENTE;
+    if (verificaDisponibilidade(quarto) == QUA_INEXISTENTE)
+        return HP_QUARTO_INEXISTENTE;
+
+    h = buscaAtivaPorHospede(hospede);
+    if (h == NULL || h->quarto != quarto)
+        return HP_HOSPEDAGEM_NAO_ENCONTRADA;
+    if (!horarioValido(hora))
+        return HP_DATA_INVALIDA;
+    if (minutoAbsoluto(hora) < minutoAbsoluto(h->entrada))
+        return HP_SAIDA_ANTES_DA_ENTRADA;
+
+    if (obtemValorDiaria(quarto, &valorDiaria) != QUA_OK)
+        return HP_ERRO_QUARTO;
+
+    
+    diarias = diaAbsoluto(hora) - diaAbsoluto(h->entrada);
+    if (diarias < 1)
+        diarias = 1;     // minimo de 1 diaria 
+
+    // Libera o quarto antes de encerrar 
+    if (liberaQuarto(quarto) != QUA_OK)
+        return HP_ERRO_QUARTO;
+
+    
+    h->saida            = hora;
+    h->diarias_efetivas = (int) diarias;
+    h->valorTotal       = (float) diarias * valorDiaria;
+    h->status           = HP_ENCERRADA;
+    if (valorTotal != NULL)
+        *valorTotal = h->valorTotal;
+    return HP_OK;
+}
+
+HP_RET listaHospedagens(HP_STATUS status){
     if (status != HP_ATIVA && status != HP_ENCERRADA)
     return HP_STATUS_INVALIDO;
 
@@ -84,70 +214,9 @@ HP_RET filtraHospedagens(HP_STATUS status){
     if(encontradas == 0)
     return HP_LISTA_VAZIA;
     if(status==HP_ATIVA)
-    printf("Foram encrontrados %d quartos ativos.");
+    printf("Foram encontradas %d hospedagens ativas.\n", encontradas);
     if(status==HP_ENCERRADA)
-    printf("Foram encrontrados %d quartos encerrados.");
+    printf("Foram encontradas %d hospedagens encerradas.\n", encontradas);
 
      return HP_OK;
 }
-HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
-    //funçao da checagem desesperada o incio
-    hospedagem_S* h;
-    cadeiaHospedagem_S* no;
-    //ve se o hospede tá de boa
-    if(verificaHospede(nHospede) != H_OK)
-        return HP_HOSPEDE_INEXISTENTE;
-    if (buscaAtivaPorHospede(codHospede) != NULL)
-        return HP_HOSPEDE_JA_HOSPEDADO; 
-
-    QUA_RET disponibilidade= statusQuarto(nQuarto);
-    //vê se o quarto ta de boa
-    if (disponibilidade == QUA_INEXISTENTE)
-        return HP_QUARTO_INEXISTENTE;
-    if (disponibilidade != QUA_OK)
-        return HP_QUARTO_OCUPADO;    
-    //vê se as diarias tao de boa
-    if (diarias <= 0)
-        return HP_DIARIAS_INVALIDAS;
-    //vê se o horario ta boa (meu deus)
-    if (!horarioValido(entrada))
-        return HP_DATA_INVALIDA;
-    //ve se tem espaço no hotel
-    if (totalHospedagens >= LIM_HOSPEDAGENS)
-        return HP_LIMITE_ATINGIDO;
-
-    h  = malloc(sizeof(hospedagem));
-    no = malloc(sizeof(cadeiaHospedagem));
-    if (h == NULL || no == NULL) {
-        free(h);                                       
-        free(no);
-        return HP_ERRO_MEMORIA;
-    }
- 
-    if (ocupaQuarto(numQuarto) != QUA_OK) {
-        free(h);
-        free(no);
-        return HP_ERRO_QUARTO;
-    }
-    int valorDiaria=0;
-    diariaQuarto(numQuarto, &valorDiaria);
-    //preenchendo de fato
-    h->codigo            = totalHospedagens+1;
-    h->status            = HP_ATIVA;
-    h->hospede           = codHospede;
-    h->quarto            = numQuarto;
-    h->entrada           = entrada;                
-    h->diariasReservadas = diarias;
-    h->diariasEfetivas   = 0;
-    h->valorTotal        = diarias*valorDiaria;
- 
-    //colocando na lista
-    no->hospedagem = h;
-    no->prox = cabeca;
-    cabeca = no;
-    totalHospedagens++;
- 
-    return HP_OK
-}
-
-int checkOut(int hospede, int quarto, Horario hora);
