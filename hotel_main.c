@@ -15,7 +15,6 @@ Vinicius Silberman Pereira -- 2510569
 #include "hospede.h"
 #include "quarto.h"
 
-cadeiaHospede* hospedes = NULL;
 
 void limparEntrada(void){
     int caractere;
@@ -36,6 +35,7 @@ int main(void){
 
     printf("\nQUARTOS:");
     check = loadQuarto();
+    check = loadHospede(); 
 
     printf("\nBem vindo ao sistema de gerenciamento de hoteis.\nSelecione qual acaoo gostaria de realizar:\n\n"
         "\tExemplo: ACAO --- BOTAO\n\n"
@@ -172,6 +172,6 @@ int main(void){
     printf("\n---FINALIZANDO SISTEMA---\n");
 
     check = fechaQuarto();
-
+    check = fechaHospede(); 
     return 0;
 }
