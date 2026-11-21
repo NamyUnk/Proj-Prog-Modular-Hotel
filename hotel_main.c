@@ -29,6 +29,10 @@ int main(void){
     float valorQuarto = 0;
     char resposta;
     int modo;
+    char nomeHospede[100];
+    int documento;
+    int telefone;
+    int codigo;
 
     //inicialização:
     printf("\n---INICIALIZANDO SISTEMA---\n\n");
@@ -54,21 +58,93 @@ int main(void){
 
         switch(opcao){
 
-            // case 'a':
-            //     printf("\nCadastrar novo hospede\n");
-            //     break;
+            case 'a':
 
-            // case 'b':
-            //     printf("\nAlterar dados de hospede\n");
-            //     break;
+                do{
+                    printf("\nDigite o nome do hospede: ");
+                    scanf(" %[^\n]", nomeHospede);
+                    limparEntrada();
+                    printf("\nDigite o numero do documento do hospede: ");
+                    scanf(" %d", &documento);
+                    limparEntrada();
+                    printf("\nDigite o telefone do hospede: ");
+                    scanf(" %d", &telefone);
+                    limparEntrada();
+                    printf("\nDigite o codigo de identificacao para o novo hospede: ");
+                    scanf(" %d", &codigo);
+                    limparEntrada();
+                    check = cadastraHospede(codigo, nomeHospede, documento, telefone);
 
-            // case 'c':
-            //     printf("\nConsultar dados de hospede\n");
-            //     break;
+                    printf("\nGostaria de cadastrar outro hospede? (s/n): ");
+                    scanf(" %c", &resposta);
+                    limparEntrada();
 
-            // case 'd':
-            //     printf("\nListar todos os hospedes\n");
-            //     break;
+                    if(resposta == 's' || resposta == 'S') check = 1; 
+                    else if(resposta == 'n' || resposta == 'N') check = 0;
+                    else{
+                        printf("\nResposta invalida! Encerrando cadastro de hospedes.\n");
+                        check = 0;
+                    }
+
+                } while(check!=0);
+
+                break;
+
+            case 'b':
+
+                do{
+                    printf("\nDeseja informar o codigo (1) ou o documento (2)? ");
+                    scanf(" %d", &modo);
+                    limparEntrada();
+                    printf("\nInforme o numero: ");
+                    scanf(" %d", &codigo);
+                    limparEntrada();
+                    check = alteraHospede(codigo, modo);
+
+                    printf("\nGostaria de alterar outro hospede? (s/n): ");
+                    scanf(" %c", &resposta);
+                    limparEntrada();
+
+                    if(resposta == 's' || resposta == 'S') check = 1; 
+                    else if(resposta == 'n' || resposta == 'N') check = 0;
+                    else{
+                        printf("\nResposta invalida! Encerrando alteracao de hospedes.\n");
+                        check = 0;
+                    }
+
+                } while(check!=0);
+
+                break;
+
+            case 'c':
+
+                do{
+                    printf("\nDeseja informar o codigo (1) ou o documento (2)? ");
+                    scanf(" %d", &modo);
+                    limparEntrada();
+                    printf("\nInforme o numero: ");
+                    scanf(" %d", &codigo);
+                    limparEntrada();
+                    check = consultaHospede(codigo, modo);
+
+                    printf("\nGostaria de consultar outro hospede? (s/n): ");
+                    scanf(" %c", &resposta);
+                    limparEntrada();
+
+                    if(resposta == 's' || resposta == 'S') check = 1; 
+                    else if(resposta == 'n' || resposta == 'N') check = 0;
+                    else{
+                        printf("\nResposta invalida! Encerrando consulta de hospedes.\n");
+                        check = 0;
+                    }
+
+                } while(check!=0);
+
+                break;
+
+            case 'd':
+                listaHospedes();
+                break;
 
             case 'e':
 
