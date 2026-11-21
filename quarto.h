@@ -3,8 +3,8 @@
 
 #define LIM_QUARTOS 50
 
-int loadQuarto();
-int fechaQuarto();
+int loadQuarto(void);
+int fechaQuarto(void);
 
 int statusQuarto(int num); //retorna status do quarto
 int diariaQuarto(int num,float* diaria); //passa o valor da diaria pelo parametro int* diaria

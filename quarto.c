@@ -21,7 +21,7 @@ typedef struct cadeiaQuarto{
 
 cadeiaQuarto* quartos = NULL;
 
-int loadQuarto() {
+int loadQuarto(void) {
 
     /* retornos:
     0 = sucesso
@@ -83,12 +83,12 @@ int loadQuarto() {
 
     fclose(arquivo);
 
-    printf("\nQuartos carregados com sucesso!\n");
+    printf("\nQuartos carregados com sucesso!\n\n");
 
     return 0;
 }
 
-int fechaQuarto() {
+int fechaQuarto(void) {
 
     /* retornos:
     0 = sucesso
