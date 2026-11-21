@@ -12,7 +12,23 @@ codigos de retorno das funcoes PRA USAR NA MAIN QUANDO ESTIVER PRONTA:
 4 = erro de alocacao de memoria (malloc falhou ao tentar alocar)
 */
 
-extern cadeiaHospede* hospedes; //variavel global pra hospedes (será criada na main)
+typedef struct hospede{
+
+    int codigo;
+    char* nome;
+    int documento;
+    int telefone;
+
+} hospede;
+
+typedef struct cadeiaHospede{
+
+    hospede* hospede;
+    struct cadeiaHospede* prox;
+
+} cadeiaHospede;
+
+cadeiaHospede* hospedes = NULL;
 
 int cadastraHospede(int codigo, char* nome, int documento, int telefone) {
     if (codigo <= 0) {
