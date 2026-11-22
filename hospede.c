@@ -358,7 +358,7 @@ int fechaHospede() {
     return 0;
 }
 
-int obtemNomeHospede(int codigo, char* destino) {
+int obtemNomeHospede(int codigo, char* destino, size_t tamanho) {
 
     /* retornos:
     0 = achou e copiou o nome
@@ -369,10 +369,13 @@ int obtemNomeHospede(int codigo, char* destino) {
 
     while (atual) {
         if (atual->hospede && atual->hospede->codigo == codigo) {
-            if (destino) { 
-                snprintf(destino, 100, "%s", atual->hospede->nome ? atual->hospede->nome : "N/D");
+            if (destino && tamanho > 0) { 
+                snprintf(destino, tamanho, "%s", atual->hospede->nome ? atual->hospede->nome : "N/D");
             }
             return 0;
         }
         atual = atual->prox;
     }
+
+    return 1;
+}
