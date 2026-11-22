@@ -357,3 +357,22 @@ int fechaHospede() {
 
     return 0;
 }
+
+int obtemNomeHospede(int codigo, char* destino) {
+
+    /* retornos:
+    0 = achou e copiou o nome
+    1 = hospede nao encontrado
+    */
+
+    cadeiaHospede* atual = hospedes;
+
+    while (atual) {
+        if (atual->hospede && atual->hospede->codigo == codigo) {
+            if (destino) { 
+                snprintf(destino, 100, "%s", atual->hospede->nome ? atual->hospede->nome : "N/D");
+            }
+            return 0;
+        }
+        atual = atual->prox;
+    }
