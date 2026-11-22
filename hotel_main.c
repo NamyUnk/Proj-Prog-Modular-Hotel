@@ -7,6 +7,13 @@ Rafaela Gomes de Souza Sant’Anna -- 2310112
 Vinicius Silberman Pereira -- 2510569
 */
 
+/*
+MAIN
+Autora do módulo: Rafaela Gomes 2310112
+
+Módulo principal do sistema de gerenciamento de hotel, responsável por interagir com o usuário e chamar as funções dos módulos hospede, quarto e hospedagem.
+*/
+
 #include <stdio.h> 
 #include <stdlib.h>
 #include <string.h>

@@ -32,7 +32,7 @@ cadeiaHospede* hospedes = NULL;
 
 int cadastraHospede(int codigo, char* nome, int documento, int telefone) {
     if (codigo <= 0) {
-        printf("\nO código do hóspede precisa de ser um inteiro positivo.\n");
+        printf("\nO codigo do hospede precisa de ser um inteiro positivo.\n");
         return 1;
     }
                 
@@ -42,11 +42,11 @@ int total = 0;
     while (atual) { //enquanto houverem hospedes:
         if (atual->hospede) {
             if (atual->hospede->codigo == codigo) {
-                printf("\njá existe um hóspede registado com esse código %d.\n", codigo);
+                printf("\njá existe um hospede registado com esse codigo %d.\n", codigo);
                 return 2;
             }
             if (atual->hospede->documento == documento) {
-                printf("\nJá existe um hóspede registado com o documento %d.\n", documento);
+                printf("\nJá existe um hospede registado com o documento %d.\n", documento);
                 return 2;
             }
         }
@@ -55,20 +55,20 @@ int total = 0;
     }
 
     if (total >= LIM_HOSPEDES) {
-        printf("\nLimite máximo de hóspedes atingido (%d).\n", LIM_HOSPEDES);
+        printf("\nLimite máximo de hospedes atingido (%d).\n", LIM_HOSPEDES);
         return 3;
     }
 
     cadeiaHospede* novoNo = (cadeiaHospede*)malloc(sizeof(cadeiaHospede)); // alocando o nó da lista
     if (!novoNo) {
-        printf("\nErro ao alocar memória para o nó do hóspede.\n");
+        printf("\nErro ao alocar memoria para o no do hospede.\n");
         return 4;
     }
 
     novoNo->hospede = (hospede*)malloc(sizeof(hospede)); // alocando a struct do hospede
     if (!novoNo->hospede) {
         free(novoNo);
-        printf("\nErro ao alocar memória para os dados do hóspede.\n");
+        printf("\nErro ao alocar memoria para os dados do hospede.\n");
         return 4;
     }
 
@@ -91,14 +91,14 @@ int total = 0;
     novoNo->prox = hospedes; //insere no inicio da lista
     hospedes = novoNo;
 
-    printf("\nHóspede %s registado com sucesso!\n", nome ? nome : ""); //exibição do nome e mensagem de sucesso
+    printf("\nHospede %s registado com sucesso!\n", nome ? nome : ""); //exibição do nome e mensagem de sucesso
     return 0;
 }
 
 int consultaHospede(int id, int tipo) {
     
     if (tipo != 1 && tipo != 2) {
-        printf("\nTipo de consulta inválido! Use 1 para Código ou 2 para Documento.\n");
+        printf("\nTipo de consulta invalido! Use 1 para Codigo ou 2 para Documento.\n");
         return 2;
     }
 
@@ -111,8 +111,8 @@ int consultaHospede(int id, int tipo) {
             if (tipo == 2 && atual->hospede->documento == id) encontrado = 1;
 
             if (encontrado) { //exibe os dados do hospede pedido
-                printf("\n--- Dados do Hóspede ---\n");
-                printf("Código: %d\n", atual->hospede->codigo);
+                printf("\n--- Dados do Hospede ---\n");
+                printf("Codigo: %d\n", atual->hospede->codigo);
                 printf("Nome: %s\n", atual->hospede->nome ? atual->hospede->nome : "N/D");
                 printf("Documento: %d\n", atual->hospede->documento);
                 printf("Telefone: %d\n", atual->hospede->telefone);
@@ -122,7 +122,7 @@ int consultaHospede(int id, int tipo) {
         atual = atual->prox;
     }
 
-    printf("\nHóspede não encontrado.\n");
+    printf("\nHospede nao encontrado.\n");
     return 1;
 }
 
@@ -134,10 +134,10 @@ int listaHospedes() {
     cadeiaHospede* atual = hospedes;
     int encontrados = 0;
 
-    printf("\n--- Lista de Hóspedes ---\n\n");
+    printf("\n--- Lista de Hospedes ---\n\n");
     while (atual) {
         if (atual->hospede) {
-            printf("Código: %d\tNome: %s\tDocumento: %d\tTelefone: %d\n",
+            printf("Codigo: %d\tNome: %s\tDocumento: %d\tTelefone: %d\n",
                    atual->hospede->codigo,
                    atual->hospede->nome ? atual->hospede->nome : "N/D",
                    atual->hospede->documento,
@@ -148,7 +148,7 @@ int listaHospedes() {
     }
 
     if (encontrados == 0) {
-        printf("Não existem hóspedes registados no sistema.\n");
+        printf("Nao existem hospedes registados no sistema.\n");
         return 1;
     }
 
@@ -157,7 +157,7 @@ int listaHospedes() {
 
 int alteraHospede(int id, int tipo) {
     if (tipo != 1 && tipo != 2) {
-        printf("\nTipo inválido! Use 1 para Código ou 2 para Documento.\n");
+        printf("\nTipo invalido! Use 1 para Codigo ou 2 para Documento.\n");
         return 2;
     }
 
@@ -173,7 +173,7 @@ int alteraHospede(int id, int tipo) {
                 char novoNome[100];
                 int novoTelefone;
 
-                printf("\nHóspede encontrado: %s (Código: %d)\n", 
+                printf("\nHospede encontrado: %s (Codigo: %d)\n", 
                        atual->hospede->nome ? atual->hospede->nome : "N/D", 
                        atual->hospede->codigo);
 
@@ -193,14 +193,14 @@ int alteraHospede(int id, int tipo) {
 
                 atual->hospede->telefone = novoTelefone;
 
-                printf("\nDados do hóspede alterados com sucesso!\n");
+                printf("\nDados do hospede alterados com sucesso!\n");
                 return 0;
             }
         }
         atual = atual->prox;
     }
 
-    printf("\nHóspede não encontrado para alteração.\n");
+    printf("\nHospede nao encontrado para alteracao.\n");
     return 1;
 
 
@@ -247,7 +247,7 @@ int loadHospede() {
 
         if (!novo) {
 
-            printf("\nErro ao alocar memória para o nó!\n");
+            printf("\nErro ao alocar memoria para o no!\n");
             fclose(arquivo);
 
             return 2;
@@ -258,7 +258,7 @@ int loadHospede() {
         if (!novo->hospede) {
 
             free(novo);
-            printf("\nErro ao alocar memória para o hóspede!\n");
+            printf("\nErro ao alocar memoria para o hospede!\n");
             fclose(arquivo);
 
             return 2;
@@ -274,7 +274,7 @@ int loadHospede() {
 
                 free(novo->hospede);
                 free(novo);
-                printf("\nErro ao alocar memória para o nome!\n");
+                printf("\nErro ao alocar memoria para o nome!\n");
                 fclose(arquivo);
 
                 return 2;
@@ -313,7 +313,7 @@ int loadHospede() {
 
     fclose(arquivo);
 
-    printf("\nHóspedes carregados com sucesso!\n");
+    printf("\nHospedes carregados com sucesso!\n");
 
     return 0;
 }
@@ -349,7 +349,7 @@ int fechaHospede() {
                 fwrite(&tamanho, sizeof(int), 1, arquivo) != 1 ||
                 (tamanho > 0 && fwrite(atual->hospede->nome, 1, tamanho, arquivo) != (size_t)tamanho)) {
 
-                printf("\nErro ao salvar os hóspedes no arquivo!\n");
+                printf("\nErro ao salvar os hospedes no arquivo!\n");
                 fclose(arquivo);
 
                 return 2;
@@ -361,7 +361,7 @@ int fechaHospede() {
 
     fclose(arquivo);
 
-    printf("\nHóspedes salvos com sucesso!\n");
+    printf("\nHospedes salvos com sucesso!\n");
 
     return 0;
 }

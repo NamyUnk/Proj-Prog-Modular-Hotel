@@ -3,6 +3,7 @@
 
 /*
 MÓDULO QUARTO
+Autora do módulo: Rafaela Gomes 2310112
 
 Carrega os quartos de um arquivo binário, armazenando em uma lista encadeada temporária durante
 o uso, ordenando por número do quarto. 
