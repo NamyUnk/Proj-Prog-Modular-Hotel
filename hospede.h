@@ -102,7 +102,7 @@ Assertivas de saída: o hóspede foi cadastrado na lista encadeada temporária d
 
 int consultaHospede(int id, int tipo); //id: código ou documento - tipo: 1= código, 2= documento
 int cadastraHospede(int codigo, char* nome, int documento, int telefone);
-void listaHospedes();
+int listaHospedes();
 int alteraHospede(int id, int tipo);
 int obtemNomeHospede(int codigo, char* destino, size_t tamanho);
 
