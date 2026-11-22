@@ -66,6 +66,38 @@ FUNÇÕES DE INTERFACE
 ---consultaHospede
 
 Retorna os dados do hóspede, dado o código ou o documento.
+
+Parametros: int id (código ou documento do hóspede), int tipo (1=código, 2=documento)
+
+Retorno: int
+0 = sucesso
+1 = hóspede não encontrado
+2 = tipo inválido
+
+Assertivas de entrada: a lista encadeada temporária de hóspedes está carregada com os dados do arquivo binário.
+
+Assertivas de saída: os dados do hóspede foram exibidos, ou uma mensagem de erro foi exibida.
+
+
+---cadastraHospede
+
+Cadastra um novo hóspede na lista encadeada temporária de hóspedes.
+
+Parametros: int codigo (código do hóspede), char* nome (nome do hóspede), int documento (documento do hóspede), int telefone (telefone do hóspede)
+
+Retorno: int
+0 = sucesso
+1 = código inválido
+2 = hóspede já registrado
+3 = limite máximo de hóspedes atingido
+4 = erro de memória
+
+Assertivas de entrada: a lista encadeada temporária de hóspedes está carregada com os dados do arquivo binário.
+
+Assertivas de saída: o hóspede foi cadastrado na lista encadeada temporária de hóspedes, ou uma mensagem de erro foi exibida.
+
+
+---listaHospedes
 */
 
 int consultaHospede(int id, int tipo); //id: código ou documento - tipo: 1= código, 2= documento
