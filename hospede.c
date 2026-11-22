@@ -126,13 +126,13 @@ int consultaHospede(int id, int tipo) {
     return 1;
 }
 
-void listaHospedes() {
+int listaHospedes() {
+    /* retornos:
+    0 = sucesso (pelo menos um hospede listado)
+    1 = lista vazia
+    */
     cadeiaHospede* atual = hospedes;
-
-    if (!atual) {
-        printf("\nNão existem hóspedes registados no sistema.\n");
-        return;
-    }
+    int encontrados = 0;
 
     printf("\n--- Lista de Hóspedes ---\n\n");
     while (atual) {
@@ -142,9 +142,17 @@ void listaHospedes() {
                    atual->hospede->nome ? atual->hospede->nome : "N/D",
                    atual->hospede->documento,
                    atual->hospede->telefone);
+            encontrados++;
         }
         atual = atual->prox;
     }
+
+    if (encontrados == 0) {
+        printf("Não existem hóspedes registados no sistema.\n");
+        return 1;
+    }
+
+    return 0;
 }
 
 int alteraHospede(int id, int tipo) {
