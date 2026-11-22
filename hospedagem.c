@@ -92,6 +92,16 @@ static hospedagem_S* buscaAtivaPorHospede(int codHospede){
             return p->hospedagem;
     return NULL;
 }
+/* Libera todos os nos de uma lista e as hospedagens que eles guardam */
+static void liberaLista(cadeiaHospedagem_S* lista){
+    cadeiaHospedagem_S* prox;
+    while (lista != NULL) {
+        prox = lista->prox;
+        free(lista->hospedagem);
+        free(lista);
+        lista = prox;
+    }
+}
 
 
 
@@ -103,12 +113,12 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     cadeiaHospedagem_S* no;
     float valorDiaria = 0.0f;
     //ve se o hospede tá de boa
-    if(verificaHospede(nHospede) != 0)
+    if(consultaHospede(nHospede) != 0)
         return HP_HOSPEDE_INEXISTENTE;
     if (buscaAtivaPorHospede(nHospede) != NULL)
         return HP_HOSPEDE_JA_HOSPEDADO; 
 
-    int disponibilidade= verificaDisponibilidade(nQuarto);
+    int disponibilidade= statusQuarto(nQuarto);
     //vê se o quarto ta de boa
     if (disponibilidade == 1)
         return HP_QUARTO_INEXISTENTE;
@@ -126,7 +136,7 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     if (totalHospedagens >= LIM_HOSPEDAGENS)
         return HP_LIMITE_ATINGIDO;
 
-    h  = malloc(sizeof(hospedagem_S));
+    h  = calloc(1, sizeof(hospedagem_S));
     no = malloc(sizeof(cadeiaHospedagem_S));
     if (h == NULL || no == NULL) {
         free(h);                                       
@@ -163,9 +173,9 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     float valorDiaria;
     long diarias;
     //essa segue o mesmo principio da anterior
-    if (verificaHospede(hospede) != 0)
+    if (consultaHospede(hospede) != 0)
         return HP_HOSPEDE_INEXISTENTE;
-    if (verificaDisponibilidade(quarto) == 1)
+    if (statusQuarto(quarto) == 1)
         return HP_QUARTO_INEXISTENTE;
 
     h = buscaAtivaPorHospede(hospede);
