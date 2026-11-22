@@ -37,7 +37,7 @@ static void imprimeHospedagem(const hospedagem_S* h){
    char nome[100];
  
     printf("Hospedagem %d | Hospede: ", h->codigo);
-    if (obtemNomeHospede(h->hospede, nome, sizeof(nome)) == HOS_OK)
+    if (obtemNomeHospede(h->hospede, nome, sizeof(nome)) == 0)
         printf("%s", nome);
     else
         printf("(codigo %d)", h->hospede);
@@ -103,18 +103,18 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     cadeiaHospedagem_S* no;
     float valorDiaria = 0.0f;
     //ve se o hospede tá de boa
-    if(verificaHospede(nHospede) != HOS_OK)
+    if(verificaHospede(nHospede) != 0)
         return HP_HOSPEDE_INEXISTENTE;
     if (buscaAtivaPorHospede(nHospede) != NULL)
         return HP_HOSPEDE_JA_HOSPEDADO; 
 
-    QUA_CondRet disponibilidade= verificaDisponibilidade(nQuarto);
+    int disponibilidade= verificaDisponibilidade(nQuarto);
     //vê se o quarto ta de boa
-    if (disponibilidade == QUA_INEXISTENTE)
+    if (disponibilidade == 1)
         return HP_QUARTO_INEXISTENTE;
-    if (disponibilidade != QUA_OK)
+    if (disponibilidade != 0)
         return HP_QUARTO_OCUPADO;    
-    if (obtemValorDiaria(nQuarto, &valorDiaria) != QUA_OK)
+    if (obtemValorDiaria(nQuarto, &valorDiaria) != 0)
         return HP_ERRO_QUARTO;
     //vê se as diarias tao de boa
     if (diarias <= 0)
@@ -134,7 +134,7 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
         return HP_ERRO_MEMORIA;
     }
  
-    if (ocupaQuarto(nQuarto) != QUA_OK) {
+    if (ocupaQuarto(nQuarto) != 0) {
         free(h);
         free(no);
         return HP_ERRO_QUARTO;
@@ -163,9 +163,9 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     float valorDiaria;
     long diarias;
     //essa segue o mesmo principio da anterior
-    if (verificaHospede(hospede) != HOS_OK)
+    if (verificaHospede(hospede) != 0)
         return HP_HOSPEDE_INEXISTENTE;
-    if (verificaDisponibilidade(quarto) == QUA_INEXISTENTE)
+    if (verificaDisponibilidade(quarto) == 1)
         return HP_QUARTO_INEXISTENTE;
 
     h = buscaAtivaPorHospede(hospede);
@@ -176,7 +176,7 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     if (minutoAbsoluto(hora) < minutoAbsoluto(h->entrada))
         return HP_SAIDA_ANTES_DA_ENTRADA;
 
-    if (obtemValorDiaria(quarto, &valorDiaria) != QUA_OK)
+    if (obtemValorDiaria(quarto, &valorDiaria) != 0)
         return HP_ERRO_QUARTO;
 
     
@@ -185,7 +185,7 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
         diarias = 1;     // minimo de 1 diaria 
 
     // Libera o quarto antes de encerrar 
-    if (liberaQuarto(quarto) != QUA_OK)
+    if (liberaQuarto(quarto) != 0)
         return HP_ERRO_QUARTO;
 
     
@@ -219,4 +219,93 @@ HP_RET listaHospedagens(HP_STATUS status){
     printf("Foram encontradas %d hospedagens encerradas.\n", encontradas);
 
      return HP_OK;
+}
+
+HP_RET salvaHospedagens(const char* nomeArquivo){
+    FILE* arq;
+    cadeiaHospedagem_S* p;
+    hospedagem_S* h;
+
+    arq = fopen(nomeArquivo, "w");
+    if (arq == NULL)return HP_ERRO_ARQUIVO;
+    for (p = cabeca; p != NULL; p = p->prox) {
+        h = p->hospedagem;
+        fprintf(arq, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %.2f\n",
+                h->codigo, (int) h->status, h->hospede, h->quarto,
+                h->entrada.dia, h->entrada.mes, h->entrada.ano, h->entrada.hora, h->entrada.minuto,
+                h->saida.dia, h->saida.mes, h->saida.ano, h->saida.hora, h->saida.minuto,
+                h->diarias_reservadas, h->diarias_efetivas, h->valorTotal);
+    }
+
+    if (fclose(arq) != 0)
+        return HP_ERRO_ARQUIVO;
+    return HP_OK;
+}
+
+HP_RET carregaHospedagens(const char* nomeArquivo){
+    FILE* arq;
+    cadeiaHospedagem_S* novaCabeca = NULL;   
+    cadeiaHospedagem_S* fim = NULL;          
+    cadeiaHospedagem_S* no;
+    hospedagem_S lida;
+    hospedagem_S* h;
+    int status, lidos, total = 0;
+
+    arq = fopen(nomeArquivo, "r");
+    if (arq == NULL)return HP_ERRO_ARQUIVO;
+
+    /* fscanf devolve qts leu: 17 = linha completa */
+    while ((lidos = fscanf(arq, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %f",
+                           &lida.codigo, &status, &lida.hospede, &lida.quarto,
+                           &lida.entrada.dia, &lida.entrada.mes, &lida.entrada.ano,
+                           &lida.entrada.hora, &lida.entrada.minuto,
+                           &lida.saida.dia, &lida.saida.mes, &lida.saida.ano,
+                           &lida.saida.hora, &lida.saida.minuto,
+                           &lida.diarias_reservadas, &lida.diarias_efetivas,
+                           &lida.valorTotal)) == 17) {
+
+        /* confere se a linha faz sentido antes de aceitar */
+        if ((status != HP_ATIVA && status != HP_ENCERRADA)
+            || !horarioValido(lida.entrada)
+            || (status == HP_ENCERRADA && !horarioValido(lida.saida))
+            || total >= LIM_HOSPEDAGENS) {
+            lidos = 0;                       /* marca como invalido e para */
+            break;
+        }
+        lida.status = (HP_STATUS) status;
+
+        h  = malloc(sizeof(hospedagem_S));
+        no = malloc(sizeof(cadeiaHospedagem_S));
+        if (h == NULL || no == NULL) {
+            free(h);
+            free(no);
+            liberaLista(novaCabeca);
+            fclose(arq);
+            return HP_ERRO_MEMORIA;
+        }
+
+        *h = lida;                           /* copia a struct inteira */
+        no->hospedagem = h;
+        no->prox = NULL;
+        if (fim == NULL)
+            novaCabeca = no;
+        else
+            fim->prox = no;
+        fim = no;
+        total++;
+    }
+
+    fclose(arq);
+
+    /* EOF = leu ate o fim sem problemas; qualquer outro valor = parou numa linha ruim */
+    if (lidos != EOF) {
+        liberaLista(novaCabeca);             /* descarta o que foi lido; a lista atual fica intacta */
+        return HP_ARQUIVO_INVALIDO;
+    }
+
+    /* deu tudo certo: troca a lista antiga pela nova */
+    liberaLista(cabeca);
+    cabeca = novaCabeca;
+    totalHospedagens = total;
+    return HP_OK;
 }
