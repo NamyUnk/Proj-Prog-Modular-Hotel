@@ -473,3 +473,65 @@ int listaQuartos(int modo){
         return 0;
     }
 }
+
+int liberaQuarto(int num){
+
+    /* retornos:
+    0 = sucesso
+    1 = quarto inexistente
+    2 = quarto já livre
+    3 = erro ao liberar o quarto
+    */
+
+    cadeiaQuarto* pAux = NULL;
+    int verifica = buscaQuarto(num,NULL,NULL,&pAux);
+    if(verifica!=0) return 1;
+
+    if(pAux->quarto->status == 0){
+
+        printf("\nO quarto já está livre!\n");
+        return 2;
+    }
+
+    pAux->quarto->status = 0;
+
+    if(pAux->quarto->status != 0){
+
+        printf("\nErro ao liberar o quarto!\n");
+        return 3;
+    }
+
+    printf("\nQuarto liberado com sucesso!\n");
+    return 0;
+}
+
+int ocupaQuarto(int num){
+
+    /* retornos:
+    0 = sucesso
+    1 = quarto inexistente
+    2 = quarto já ocupado
+    3 = erro ao ocupar o quarto
+    */
+
+    cadeiaQuarto* pAux = NULL;
+    int verifica = buscaQuarto(num,NULL,NULL,&pAux);
+    if(verifica!=0) return 1;
+
+    if(pAux->quarto->status == 1){
+
+        printf("\nO quarto já está ocupado!\n");
+        return 2;
+    }
+
+    pAux->quarto->status = 1;
+
+    if(pAux->quarto->status != 1){
+
+        printf("\nErro ao ocupar o quarto!\n");
+        return 3;
+    }
+
+    printf("\nQuarto ocupado com sucesso!\n");
+    return 0;
+}
