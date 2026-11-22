@@ -31,8 +31,41 @@ typedef enum {
 
 
 
-int listaHospedagens(int status);
 int checkIn(int hospede, int quarto, horario_S hora, int diarias);
+/***************************************************************************
+checkOut
+Encerra a hospedagem ativa do hospede no quarto informado, calcula as
+diarias efetivas (min 1) e o valor total, e libera o quarto (RF15 a RF19, RN03, RN04).
+valorTotal: parametro de saida; recebe o valor da estadia quando o
+retorno for HP_OK. Pode ser NULL se o valor nao interessar.
+Retornos: HP_OK, HP_HOSPEDE_INEXISTENTE, HP_QUARTO_INEXISTENTE,
+HP_HOSPEDAGEM_NAO_ENCONTRADA, HP_DATA_INVALIDA,
+HP_SAIDA_ANTES_DA_ENTRADA, HP_ERRO_QUARTO
+ ***************************************************************************/
 int checkOut(int hospede, int quarto, horario_S hora);
+/***************************************************************************
+listaHospedagens
+Exibe na tela as hospedagens na situacao informada (RF20, RF21).
+status: HP_ATIVA ou HP_ENCERRADA (qualquer outro valor e recusado)
+Retornos: HP_OK, HP_STATUS_INVALIDO, HP_LISTA_VAZIA
+ ***************************************************************************/
+HP_RET listaHospedagens(HP_STATUS status);
+
+
+/***************************************************************************
+ salvaHospedagens
+ Grava todas as hospedagens (ativas e encerradas) no arquivo de uma por linha.
+ Retornos: HP_OK, HP_ERRO_ARQUIVO
+ ***************************************************************************/
+ HP_RET salvaHospedagens(const char* nomeArquivo);
+/***************************************************************************
+carregaHospedagens
+Le o arquivo gravado por salvaHospedagens e substitui a lista atual
+pelo conteudo dele. 
+Retornos: HP_OK, HP_ERRO_ARQUIVO (ex.: arquivo ainda nao existe),
+            HP_ARQUIVO_INVALIDO, HP_ERRO_MEMORIA
+ ***************************************************************************/
+HP_RET carregaHospedagens(const char* nomeArquivo);
+
 
 #endif
