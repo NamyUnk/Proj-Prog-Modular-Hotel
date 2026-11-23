@@ -387,3 +387,21 @@ int obtemNomeHospede(int codigo, char* destino, size_t tamanho) {
 
     return 1;
 }
+
+int verificaHospede(int codigo) {
+    /* retornos:
+    0 = hospede encontrado
+    1 = hospede nao encontrado
+    */
+
+    cadeiaHospede* atual = hospedes;
+
+    while (atual) {
+        if (atual->hospede && atual->hospede->codigo == codigo) {
+            return 0;
+        }
+        atual = atual->prox;
+    }
+
+    return 1;
+}

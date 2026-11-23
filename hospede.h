@@ -142,6 +142,21 @@ Retorno: int
 Assertivas de entrada: a lista encadeada temporária de hóspedes está carregada com os dados do arquivo binário.
 
 Assertivas de saída: o nome do hóspede foi copiado para o buffer destino, ou uma mensagem de erro foi exibida.
+
+
+---verificaHospede
+
+Verifica se um hóspede existe na lista encadeada temporária de hóspedes, dado o código.
+
+Parametros: int codigo (código do hóspede)
+
+Retorno: int
+0 = hóspede encontrado
+1 = hóspede não encontrado
+
+Assertivas de entrada: a lista encadeada temporária de hóspedes está carregada com os dados do arquivo binário.
+
+Assertivas de saída: a existência do hóspede foi verificada, ou uma mensagem de erro foi exibida.
 */
 
 int consultaHospede(int id, int tipo); //id: código ou documento - tipo: 1= código, 2= documento
@@ -149,5 +164,6 @@ int cadastraHospede(int codigo, char* nome, int documento, int telefone);
 int listaHospedes();
 int alteraHospede(int id, int tipo);
 int obtemNomeHospede(int codigo, char* destino, size_t tamanho);
+int verificaHospede(int codigo); //verifica se o hospede existe, retorna 0 se existe, 1 se não existe
 
 #endif

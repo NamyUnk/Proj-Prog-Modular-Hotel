@@ -1,6 +1,10 @@
 #ifndef TESTE_H
 #define TESTE_H
 
+/*
+Autor dos casos de teste: João Vitor de Oliveira 2510569
+*/
+
 /* confereTeste: compara o retorno obtido com o esperado e conta o caso de teste.
    Imprime "[OK] descricao" ou "[FALHA] descricao --- esperado: X, obtido: Y". */
 void confereTeste(char* descricao, int obtido, int esperado);
