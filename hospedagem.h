@@ -117,8 +117,8 @@ Assertivas de saída: em caso de sucesso, o arquivo contém todas as hospedagens
 hospedagens ativas gravadas com a saída zerada. A lista encadeada temporária não é alterada.
 */
 
-HP_RET carregaHospedagens(const char* nomeArquivo);
-HP_RET salvaHospedagens(const char* nomeArquivo);
+HP_RET loadHospedagem(const char* nomeArquivo);
+HP_RET fechaHospedagem(const char* nomeArquivo);
 
 /*
 FUNÇÕES DE INTERFACE

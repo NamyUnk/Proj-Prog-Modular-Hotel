@@ -102,10 +102,6 @@ static void liberaLista(cadeiaHospedagem_S* lista){
         lista = prox;
     }
 }
-
-
-
-
  
 HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     //funçao da checagem desesperada o incio
@@ -231,7 +227,7 @@ HP_RET listaHospedagens(HP_STATUS status){
      return HP_OK;
 }
 
-HP_RET salvaHospedagens(const char* nomeArquivo){
+HP_RET fechaHospedagem(const char* nomeArquivo){
     FILE* arq;
     cadeiaHospedagem_S* p;
     hospedagem_S* h;
@@ -252,7 +248,7 @@ HP_RET salvaHospedagens(const char* nomeArquivo){
     return HP_OK;
 }
 
-HP_RET carregaHospedagens(const char* nomeArquivo){
+HP_RET loadHospedagem(const char* nomeArquivo){
     FILE* arq;
     cadeiaHospedagem_S* novaCabeca = NULL;   
     cadeiaHospedagem_S* fim = NULL;          
