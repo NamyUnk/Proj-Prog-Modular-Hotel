@@ -384,15 +384,18 @@ int obtemNomeHospede(int codigo, char* destino, size_t tamanho) {
     /* retornos:
     0 = achou e copiou o nome
     1 = hospede nao encontrado
+    2 = parametro invalido (destino nulo, tamanho zero ou codigo nao positivo)
     */
+
+    if (destino == NULL || tamanho == 0 || codigo <= 0) {
+        return 2;
+    }
 
     cadeiaHospede* atual = hospedes;
 
     while (atual) {
         if (atual->hospede && atual->hospede->codigo == codigo) {
-            if (destino && tamanho > 0) { 
-                snprintf(destino, tamanho, "%s", atual->hospede->nome ? atual->hospede->nome : "N/D");
-            }
+            snprintf(destino, tamanho, "%s", atual->hospede->nome ? atual->hospede->nome : "N/D");
             return 0;
         }
         atual = atual->prox;

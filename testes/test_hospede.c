@@ -3,7 +3,7 @@ COMO RODAR (dentro da pasta testes):
     gcc test_hospede.c teste.c ..\hospede.c -o test_hospede
     .\test_hospede
 
-Resultado esperado: === HOSPEDE: 34 testes, 0 falhas ===
+Resultado esperado: === HOSPEDE: 38 testes, 0 falhas ===
 */
 
 #include <stdio.h>
@@ -83,6 +83,12 @@ int main(void){
     confereTeste("Obter nome do hospede 99 inexistente", obtemNomeHospede(99, nome, sizeof(nome)), 1);
     confereTeste("Obter nome numa variavel pequena", obtemNomeHospede(2, curto, sizeof(curto)), 0);
     confereTeste("Nome cortado no tamanho da variavel", strcmp(curto, "Bru") == 0, 1);
+    confereTeste("Obter nome com destino nulo", obtemNomeHospede(2, NULL, sizeof(nome)), 2);
+    confereTeste("Obter nome com tamanho zero", obtemNomeHospede(2, nome, 0), 2);
+    confereTeste("Obter nome com codigo 0", obtemNomeHospede(0, nome, sizeof(nome)), 2);
+    strcpy(nome, "intacto");
+    obtemNomeHospede(99, nome, sizeof(nome));
+    confereTeste("Destino nao muda quando o hospede nao existe", strcmp(nome, "intacto") == 0, 1);
 
     //ALTERACAO:
 

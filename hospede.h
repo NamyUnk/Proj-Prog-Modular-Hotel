@@ -138,10 +138,13 @@ Parametros: int codigo (código do hóspede), char* destino (buffer para armazen
 Retorno: int
 0 = achou e copiou o nome
 1 = hóspede não encontrado
+2 = parâmetro inválido (destino nulo, tamanho zero ou código não positivo)
 
-Assertivas de entrada: a lista encadeada temporária de hóspedes está carregada com os dados do arquivo binário.
+Assertivas de entrada: a lista encadeada temporária de hóspedes está carregada com os dados do arquivo binário;
+codigo é um inteiro positivo; destino aponta para um buffer válido com pelo menos tamanho posições; tamanho é maior que zero.
 
-Assertivas de saída: o nome do hóspede foi copiado para o buffer destino, ou uma mensagem de erro foi exibida.
+Assertivas de saída: se retornou 0, destino contém o nome do hóspede (cortado em tamanho-1 caracteres se for maior,
+ou "N/D" se o hóspede não tiver nome); se retornou 1 ou 2, destino não foi alterado.
 
 
 ---verificaHospede
