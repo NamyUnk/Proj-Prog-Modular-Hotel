@@ -17,8 +17,10 @@ Dados de cada hóspede:
 */
 
 #define LIM_HOSPEDES 100
-
 #include <string.h>
+#define __USE_MINGW_ANSI_STDIO 1
+
+typedef unsigned long long ull;
 
 /*
 FUNÇÕES DE INICIALIZAÇÃO E FINALIZAÇÃO
@@ -162,10 +164,11 @@ Assertivas de entrada: a lista encadeada temporária de hóspedes está carregad
 Assertivas de saída: a existência do hóspede foi verificada, ou uma mensagem de erro foi exibida.
 */
 
-int consultaHospede(int id, int tipo); //id: código ou documento - tipo: 1= código, 2= documento
-int cadastraHospede(int codigo, char* nome, int documento, int telefone);
+int consultaHospede(ull id, int tipo); //id: código ou documento - tipo: 1= código, 2= documento
+int cadastraHospede(int codigo, char* nome, ull documento, int telefone);
 int listaHospedes();
-int alteraHospede(int id, int tipo);
+int alteraHospede(ull id, int tipo);
+
 int obtemNomeHospede(int codigo, char* destino, size_t tamanho);
 int verificaHospede(int codigo); //verifica se o hospede existe, retorna 0 se existe, 1 se não existe
 

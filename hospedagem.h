@@ -78,7 +78,7 @@ typedef enum {
 /*
 FUNÇÕES DE INICIALIZAÇÃO E FINALIZAÇÃO
 
---- carregaHospedagens
+--- loadHospedagem
 
 Carrega as hospedagens do arquivo binário "hospedagem.bin" para a lista encadeada temporária,
 na mesma ordem em que foram salvas. O arquivo é aberto e fechado pelo próprio módulo.
@@ -101,7 +101,7 @@ check-in recebe o código seguinte ao último lido. Em caso de erro, a lista ant
 intacta. O status dos quartos não é alterado.
 
 
---- salvaHospedagens
+--- fechaHospedagem
 
 Salva todas as hospedagens da lista encadeada temporária (ativas e encerradas) no arquivo binário
 "hospedagem.bin". Se o arquivo já existir, é sobrescrito. O arquivo é aberto e fechado pelo

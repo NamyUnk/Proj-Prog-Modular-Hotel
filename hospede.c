@@ -16,7 +16,7 @@ typedef struct hospede{
 
     int codigo;
     char* nome;
-    int documento;
+    ull documento;
     int telefone;
 
 } hospede;
@@ -28,9 +28,9 @@ typedef struct cadeiaHospede{
 
 } cadeiaHospede;
 
-cadeiaHospede* hospedes = NULL;
+static cadeiaHospede* hospedes = NULL;
 
-int cadastraHospede(int codigo, char* nome, int documento, int telefone) {
+int cadastraHospede(int codigo, char* nome, ull documento, int telefone) {
     if (codigo <= 0) {
         printf("\nO codigo do hospede precisa de ser um inteiro positivo.\n");
         return 1;
@@ -46,7 +46,7 @@ int total = 0;
                 return 2;
             }
             if (atual->hospede->documento == documento) {
-                printf("\nJá existe um hospede registado com o documento %d.\n", documento);
+                printf("\nJá existe um hospede registado com o documento %llu.\n", documento);
                 return 2;
             }
         }
@@ -95,7 +95,7 @@ int total = 0;
     return 0;
 }
 
-int consultaHospede(int id, int tipo) {
+int consultaHospede(ull id, int tipo) {
     
     if (tipo != 1 && tipo != 2) {
         printf("\nTipo de consulta invalido! Use 1 para Codigo ou 2 para Documento.\n");
@@ -107,14 +107,14 @@ int consultaHospede(int id, int tipo) {
     while (atual) { //percorre a lista de hospedes 
         if (atual->hospede) {
             int encontrado = 0;
-            if (tipo == 1 && atual->hospede->codigo == id) encontrado = 1;
+            if (tipo == 1 && (ull)atual->hospede->codigo == id) encontrado = 1;
             if (tipo == 2 && atual->hospede->documento == id) encontrado = 1;
 
             if (encontrado) { //exibe os dados do hospede pedido
                 printf("\n--- Dados do Hospede ---\n");
                 printf("Codigo: %d\n", atual->hospede->codigo);
                 printf("Nome: %s\n", atual->hospede->nome ? atual->hospede->nome : "N/D");
-                printf("Documento: %d\n", atual->hospede->documento);
+                printf("Documento: %llu\n", atual->hospede->documento);
                 printf("Telefone: %d\n", atual->hospede->telefone);
                 return 0;
             }
@@ -137,7 +137,7 @@ int listaHospedes() {
     printf("\n--- Lista de Hospedes ---\n\n");
     while (atual) {
         if (atual->hospede) {
-            printf("Codigo: %d\tNome: %s\tDocumento: %d\tTelefone: %d\n",
+            printf("Codigo: %d\tNome: %s\tDocumento: %llu\tTelefone: %d\n",
                    atual->hospede->codigo,
                    atual->hospede->nome ? atual->hospede->nome : "N/D",
                    atual->hospede->documento,
@@ -155,7 +155,7 @@ int listaHospedes() {
     return 0;
 }
 
-int alteraHospede(int id, int tipo) {
+int alteraHospede(ull id, int tipo) {
     if (tipo != 1 && tipo != 2) {
         printf("\nTipo invalido! Use 1 para Codigo ou 2 para Documento.\n");
         return 2;
@@ -166,7 +166,7 @@ int alteraHospede(int id, int tipo) {
     while (atual) {
         if (atual->hospede) {
             int encontrado = 0;
-            if (tipo == 1 && atual->hospede->codigo == id) encontrado = 1;
+            if (tipo == 1 && (ull)atual->hospede->codigo == id) encontrado = 1;
             if (tipo == 2 && atual->hospede->documento == id) encontrado = 1;
 
             if (encontrado) {
@@ -224,7 +224,9 @@ int loadHospede() {
         return 1;
     }
 
-    int codigo, documento, telefone, tamanho;
+    int codigo, telefone, tamanho;
+    ull documento;
+
     cadeiaHospede* novo;
     cadeiaHospede* atual = hospedes;
 
@@ -233,7 +235,7 @@ int loadHospede() {
     while (fread(&codigo, sizeof(int), 1, arquivo) == 1) {
 
         //o nome e um ponteiro, entao e salvo separado: tamanho (com o \0) e depois os caracteres
-        if (fread(&documento, sizeof(int), 1, arquivo) != 1 ||
+        if (fread(&documento, sizeof(ull), 1, arquivo) != 1 ||
             fread(&telefone, sizeof(int), 1, arquivo) != 1 ||
             fread(&tamanho, sizeof(int), 1, arquivo) != 1 || tamanho < 0) {
 
@@ -344,7 +346,7 @@ int fechaHospede() {
             int tamanho = atual->hospede->nome ? (int)strlen(atual->hospede->nome) + 1 : 0; //0 = sem nome
 
             if (fwrite(&atual->hospede->codigo, sizeof(int), 1, arquivo) != 1 ||
-                fwrite(&atual->hospede->documento, sizeof(int), 1, arquivo) != 1 ||
+                fwrite(&atual->hospede->documento, sizeof(ull), 1, arquivo) != 1 ||
                 fwrite(&atual->hospede->telefone, sizeof(int), 1, arquivo) != 1 ||
                 fwrite(&tamanho, sizeof(int), 1, arquivo) != 1 ||
                 (tamanho > 0 && fwrite(atual->hospede->nome, 1, tamanho, arquivo) != (size_t)tamanho)) {

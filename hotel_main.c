@@ -37,7 +37,7 @@ int main(void){
     char resposta;
     int modo;
     char nomeHospede[100];
-    int documento;
+    ull documento;
     int telefone;
     int codigo;
     horario_S entrada = {0,0,0,0,0};
@@ -46,7 +46,6 @@ int main(void){
     //inicialização:
     printf("\n---INICIALIZANDO SISTEMA---\n\n");
 
-    printf("\nQUARTOS:");
     check = loadQuarto();
     check = loadHospede(); 
     check = loadHospedagem();
@@ -75,7 +74,7 @@ int main(void){
                     scanf(" %[^\n]", nomeHospede);
                     limparEntrada();
                     printf("\nDigite o numero do documento do hospede: ");
-                    scanf(" %d", &documento);
+                    scanf(" %llu", &documento);
                     limparEntrada();
                     printf("\nDigite o telefone do hospede: ");
                     scanf(" %d", &telefone);
@@ -107,9 +106,9 @@ int main(void){
                     scanf(" %d", &modo);
                     limparEntrada();
                     printf("\nInforme o numero: ");
-                    scanf(" %d", &codigo);
+                    scanf(" %llu", &documento);
                     limparEntrada();
-                    check = alteraHospede(codigo, modo);
+                    check = alteraHospede(documento, modo);
 
                     printf("\nGostaria de alterar outro hospede? (s/n): ");
                     scanf(" %c", &resposta);
@@ -133,9 +132,9 @@ int main(void){
                     scanf(" %d", &modo);
                     limparEntrada();
                     printf("\nInforme o numero: ");
-                    scanf(" %d", &codigo);
+                    scanf(" %llu", &documento);
                     limparEntrada();
-                    check = consultaHospede(codigo, modo);
+                    check = consultaHospede(documento, modo);
 
                     printf("\nGostaria de consultar outro hospede? (s/n): ");
                     scanf(" %c", &resposta);
@@ -355,7 +354,7 @@ int main(void){
         
     } while(opcao != 'x');
 
-    //finalização:
+    //Finalização:
 
     printf("\n---FINALIZANDO SISTEMA---\n");
 

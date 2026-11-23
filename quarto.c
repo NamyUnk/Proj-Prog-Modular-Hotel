@@ -19,14 +19,14 @@ typedef struct cadeiaQuarto{
 
 } cadeiaQuarto;
 
-cadeiaQuarto* quartos = NULL;
+static cadeiaQuarto* quartos = NULL;
 
 int loadQuarto(void) {
 
     /* retornos:
     0 = sucesso
     1 = arquivo nulo
-    2 = erro alocação de memória
+    2 = erro alocacao de memoria
     3 = erro de leitura
     */
 
@@ -49,7 +49,7 @@ int loadQuarto(void) {
 
         if (!novo) {
 
-            printf("\nErro ao alocar memória para o nó!\n");
+            printf("\nErro ao alocar memoria para o no!\n");
             fclose(arquivo);
 
             return 2;
@@ -60,7 +60,7 @@ int loadQuarto(void) {
         if (!novo->quarto) {
 
             free(novo);
-            printf("\nErro ao alocar memória para o quarto!\n");
+            printf("\nErro ao alocar memoria para o quarto!\n");
             fclose(arquivo);
 
             return 2;
@@ -92,7 +92,7 @@ int fechaQuarto(void) {
 
     /* retornos:
     0 = sucesso
-    1 = arquivo não abriu
+    1 = arquivo nao abriu
     2 = erro ao salvar
     */
 
@@ -138,7 +138,7 @@ int buscaQuarto(int num,int* status,float* diaria,cadeiaQuarto** quarto){ //func
     cadeiaQuarto* pAux = quartos;
 
     if(!pAux){
-        printf("\nNão foi possível encontrar a lista de quartos registrados.\n");
+        printf("\nNao foi possivel encontrar a lista de quartos registrados.\n");
         return 1;
     }
 
@@ -156,7 +156,7 @@ int buscaQuarto(int num,int* status,float* diaria,cadeiaQuarto** quarto){ //func
         pAux = pAux->prox;
     }
 
-    printf("\nNão foi possível encontrar o quarto.\n");
+    printf("\nNao foi possivel encontrar o quarto.\n");
     return 2;
 }
 
@@ -172,11 +172,11 @@ int statusQuarto(int num){
     int status;
 
     int verifica = buscaQuarto(num,&status,NULL,NULL);
-    if(verifica!=0) return 3; //mensagem de erro já printada no buscar
+    if(verifica!=0) return 3; //mensagem de erro ja printada no buscar
 
     if (status!=0 && status!=1){
 
-        printf("\nStatus do quarto encontrado inválido!\n");
+        printf("\nStatus do quarto encontrado invalido!\n");
         return 2;
     }
 
@@ -189,21 +189,21 @@ int diariaQuarto(int num,float* diaria){
     0 = sucesso
     1 = erro parâmetro
     2 = quarto inexistente
-    3 = erro ao resgatar a diária
+    3 = erro ao resgatar a diaria
     */
 
     if(!diaria){
 
-        printf("\nEndereço para registrar a diária não encontrado!\n");
+        printf("\nEndereco para registrar a diaria nao encontrado!\n");
         return 1;
     }
 
     int verifica = buscaQuarto(num,NULL,diaria,NULL);
-    if(verifica!=0) return 2; //mensagem de erro já printada no buscar
+    if(verifica!=0) return 2; //mensagem de erro ja printada no buscar
 
     if(*diaria == 0){
 
-        printf("\nErro ao resgatar o valor da diária no sitema!\n");
+        printf("\nErro ao resgatar o valor da diaria no sitema!\n");
         return 3;
     }
 
@@ -230,7 +230,7 @@ int consultaQuarto(int num){
     switch (pAux->quarto->tipo){
 
         case 0: 
-        tipo = "Suíte";
+        tipo = "Suite";
         break;
 
         case 1:
@@ -242,7 +242,7 @@ int consultaQuarto(int num){
         break;
 
         default:
-        printf("\nTipo de quarto encontrado inválido!\n");
+        printf("\nTipo de quarto encontrado invalido!\n");
         return 2;
     }
 
@@ -260,7 +260,7 @@ int consultaQuarto(int num){
         return 2;
     }
 
-    printf("\nNúmero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: %s\n",num,tipo,pAux->quarto->valor,status_s);
+    printf("\nNumero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: %s\n",num,tipo,pAux->quarto->valor,status_s);
 
     return 0;
 }
@@ -270,8 +270,8 @@ int cadastraQuarto(int num, int tipo, float valor){
     /* retornos:
     0 = sucesso
     1 = valores invalidos
-    2 = quarto já registrado
-    3 = erro de memória
+    2 = quarto ja registrado
+    3 = erro de memoria
     4 = erro percorrendo lista
     */
 
@@ -279,13 +279,13 @@ int cadastraQuarto(int num, int tipo, float valor){
 
     if(num<=0 || valor<= 0){
 
-        printf("\nO número e valor da diária do quarto precisam ser positivos.\n");
+        printf("\nO numero e valor da diaria do quarto precisam ser positivos.\n");
         return 1; 
     }
 
     if(tipo!=0 && tipo!=1 && tipo!=2){
 
-        printf("\nTipo de quarto inválido!\n");
+        printf("\nTipo de quarto invalido!\n");
         return 1;
     }
 
@@ -293,15 +293,15 @@ int cadastraQuarto(int num, int tipo, float valor){
 
     if(confereRepetido==0){
 
-        printf("\nO número do quarto já está registrado no sistema.\n");
+        printf("\nO numero do quarto ja esta registrado no sistema.\n");
         return 2;
     }
-    else printf("Ou seja, o número está disponível para a criação do novo quarto!\n");
+    else printf("Ou seja, o numero esta disponivel para a criacao do novo quarto!\n");
 
     cadeiaQuarto* quartonovo = malloc(sizeof(cadeiaQuarto));
 
     if (!quartonovo) {
-        printf("\nErro ao alocar memória para o nó.\n");
+        printf("\nErro ao alocar memoria para o no.\n");
         return 3;
     }
 
@@ -310,7 +310,7 @@ int cadastraQuarto(int num, int tipo, float valor){
     if (!quartonovo->quarto) {
 
         free(quartonovo);
-        printf("\nErro ao alocar memória para o quarto.\n");
+        printf("\nErro ao alocar memoria para o quarto.\n");
         return 3;
     }
 
@@ -324,18 +324,18 @@ int cadastraQuarto(int num, int tipo, float valor){
 
         while(pAux){
 
-            if(pAux->quarto && pAux->quarto->num < num){ //se o atual é menor
+            if(pAux->quarto && pAux->quarto->num < num){ //se o atual e menor
 
                 if(pAux->prox){
 
-                    if (pAux->prox->quarto->num > num){ //se o atual é menor e o próximo é maior
+                    if (pAux->prox->quarto->num > num){ //se o atual e menor e o proximo e maior
 
                         quartonovo->prox = pAux->prox;
                         pAux->prox = quartonovo;
                         printf("\nQuarto registrado com sucesso no meio da lista!\n");
                         return 0;
                     }
-                    pAux = pAux->prox; //se o atual é menor e o próximo também é menor
+                    pAux = pAux->prox; //se o atual e menor e o proximo tambem e menor
                 }
                 else{ //se nao existe proximo
 
@@ -344,10 +344,10 @@ int cadastraQuarto(int num, int tipo, float valor){
                     return 0;
                 }
             }
-            else{ //se o atual é maior
+            else{ //se o atual e maior
 
                 quartonovo->prox = pAux;
-                printf("\nQuarto registrado com sucesso no começo da lista!\n");
+                printf("\nQuarto registrado com sucesso no comeco da lista!\n");
                 quartos = quartonovo;
                 return 0;
             }
@@ -367,7 +367,7 @@ int listaQuartos(int modo){
 
     /* retornos:
     0 = sucesso
-    1 = lista não encontrada
+    1 = lista nao encontrada
     2 = modo invalido
     3 = valor invalido
     4 = erro percorrendo lista
@@ -376,19 +376,19 @@ int listaQuartos(int modo){
     cadeiaQuarto* pAux = quartos;
 
     if(!pAux){
-        printf("\nNão foi possível encontrar a lista de quartos registrados.\n");
+        printf("\nNao foi possivel encontrar a lista de quartos registrados.\n");
         return 1;
     }
 
     if(modo != 1 && modo != 0){
 
-        printf("\nModo de listagem inválido! Por favor, solicitar a listagem novamente.\n");
+        printf("\nModo de listagem invalido! Por favor, solicitar a listagem novamente.\n");
         return 2;
     }
 
     if(modo == 0){
 
-        printf("\nLista de quartos disponíveis:\n\n");
+        printf("\nLista de quartos disponiveis:\n\n");
 
         while(pAux){
 
@@ -399,7 +399,7 @@ int listaQuartos(int modo){
                 switch (pAux->quarto->tipo){
 
                     case 0: 
-                    tipo = "Suíte";
+                    tipo = "Suite";
                     break;
 
                     case 1:
@@ -411,11 +411,11 @@ int listaQuartos(int modo){
                     break;
 
                     default:
-                    printf("\nTipo de quarto encontrado inválido!\n");
+                    printf("\nTipo de quarto encontrado invalido!\n");
                     return 3;
                 }
 
-                printf("\nNúmero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: Livre\n",pAux->quarto->num,tipo,pAux->quarto->valor);
+                printf("\nNumero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: Livre\n",pAux->quarto->num,tipo,pAux->quarto->valor);
                 pAux = pAux->prox;
             }
             else pAux = pAux->prox;
@@ -435,7 +435,7 @@ int listaQuartos(int modo){
             switch (pAux->quarto->tipo){
 
                 case 0: 
-                tipo = "Suíte";
+                tipo = "Suite";
                 break;
 
                 case 1:
@@ -447,7 +447,7 @@ int listaQuartos(int modo){
                 break;
 
                 default:
-                printf("\nTipo de quarto encontrado inválido!\n");
+                printf("\nTipo de quarto encontrado invalido!\n");
                 return 3;
                 }
 
@@ -462,11 +462,11 @@ int listaQuartos(int modo){
                 break;
 
                 default:
-                printf("\nStatus do quarto encontrado inválido!\n");
+                printf("\nStatus do quarto encontrado invalido!\n");
                 return 3;
                 }
 
-            printf("\nNúmero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: %s\n",pAux->quarto->num,tipo,pAux->quarto->valor,status);
+            printf("\nNumero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: %s\n",pAux->quarto->num,tipo,pAux->quarto->valor,status);
             pAux = pAux->prox;
         }
     }
@@ -478,7 +478,7 @@ int liberaQuarto(int num){
     /* retornos:
     0 = sucesso
     1 = quarto inexistente
-    2 = quarto já livre
+    2 = quarto ja livre
     3 = erro ao liberar o quarto
     */
 
@@ -488,7 +488,7 @@ int liberaQuarto(int num){
 
     if(pAux->quarto->status == 0){
 
-        printf("\nO quarto já está livre!\n");
+        printf("\nO quarto ja esta livre!\n");
         return 2;
     }
 
@@ -509,7 +509,7 @@ int ocupaQuarto(int num){
     /* retornos:
     0 = sucesso
     1 = quarto inexistente
-    2 = quarto já ocupado
+    2 = quarto ja ocupado
     3 = erro ao ocupar o quarto
     */
 
@@ -519,7 +519,7 @@ int ocupaQuarto(int num){
 
     if(pAux->quarto->status == 1){
 
-        printf("\nO quarto já está ocupado!\n");
+        printf("\nO quarto ja esta ocupado!\n");
         return 2;
     }
 
