@@ -1,13 +1,5 @@
-//Trabalho Hotel - Projeto Programação Modular
-//Teste automatizado do modulo Hospede
-
-/*
-Como compilar e rodar (dentro da pasta testes):
-    gcc test_hospede.c teste.c ..\hospede.c -o test_hospede
-    .\test_hospede
-*/
-
 #include <stdio.h>
+#include <string.h>
 
 #include "teste.h"
 #include "../hospede.h"
@@ -15,6 +7,8 @@ Como compilar e rodar (dentro da pasta testes):
 int main(void){
 
     FILE* arquivo;
+    char nome[100];
+    char curto[4];
     int i;
     int cadastrados = 0;
 
@@ -26,6 +20,7 @@ int main(void){
 
     confereTeste("Carregar sem arquivo existente", loadHospede(), 1);
     confereTeste("Consultar hospede com lista vazia", consultaHospede(1,1), 1);
+    confereTeste("Listar hospedes com lista vazia", listaHospedes(), 1);
 
     //CADASTRO COM VALORES INVALIDOS:
 
@@ -42,6 +37,8 @@ int main(void){
     confereTeste("Cadastrar hospede 1 (Ana)", cadastraHospede(1,"Ana",111,2199), 0);
     confereTeste("Cadastrar hospede 2 (Bruno)", cadastraHospede(2,"Bruno",222,2198), 0);
     confereTeste("Cadastrar hospede 3 (sem nome)", cadastraHospede(3,NULL,333,2197), 0);
+
+    confereTeste("Listar hospedes cadastrados", listaHospedes(), 0);
 
     //CADASTRO REPETIDO:
 
@@ -60,6 +57,18 @@ int main(void){
     confereTeste("Consultar documento 999 inexistente", consultaHospede(999,2), 1);
     confereTeste("Consultar com tipo invalido (3)", consultaHospede(1,3), 2);
 
+    //OBTER NOME:
+
+    printf("\n--- OBTER NOME ---\n\n");
+
+    confereTeste("Obter nome do hospede 2", obtemNomeHospede(2, nome, sizeof(nome)), 0);
+    confereTeste("Nome obtido e Bruno", strcmp(nome, "Bruno") == 0, 1);
+    confereTeste("Obter nome do hospede 3 (sem nome)", obtemNomeHospede(3, nome, sizeof(nome)), 0);
+    confereTeste("Hospede sem nome devolve N/D", strcmp(nome, "N/D") == 0, 1);
+    confereTeste("Obter nome do hospede 99 inexistente", obtemNomeHospede(99, nome, sizeof(nome)), 1);
+    confereTeste("Obter nome numa variavel pequena", obtemNomeHospede(2, curto, sizeof(curto)), 0);
+    confereTeste("Nome cortado no tamanho da variavel", strcmp(curto, "Bru") == 0, 1);
+
     //ALTERACAO:
 
     printf("\n--- ALTERACAO ---\n\n");
@@ -75,6 +84,7 @@ int main(void){
     freopen("entrada_teste.txt", "r", stdin);
 
     confereTeste("Alterar hospede 1 (novo nome e telefone)", alteraHospede(1,1), 0);
+    fclose(stdin); //fecha o arquivo de respostas (no Windows nao da para apagar arquivo aberto)
     remove("entrada_teste.txt");
 
     //GRAVACAO NO ARQUIVO:

@@ -77,6 +77,25 @@ int main(void){
     confereTeste("Listar todos os quartos (modo 1)", listaQuartos(1), 0);
     confereTeste("Listar com modo invalido (2)", listaQuartos(2), 2);
 
+    //OCUPAR QUARTO:
+
+    printf("\n--- OCUPAR QUARTO ---\n\n");
+
+    confereTeste("Ocupar o quarto 112", ocupaQuarto(112), 0);
+    confereTeste("Status do quarto 112 agora e ocupado (1)", statusQuarto(112), 1);
+    confereTeste("Ocupar o 112 de novo (ja ocupado)", ocupaQuarto(112), 2);
+    confereTeste("Ocupar o quarto 999 inexistente", ocupaQuarto(999), 1);
+    confereTeste("Listar livres com o 112 ocupado", listaQuartos(0), 0);
+
+    //LIBERAR QUARTO:
+
+    printf("\n--- LIBERAR QUARTO ---\n\n");
+
+    confereTeste("Liberar o quarto 112", liberaQuarto(112), 0);
+    confereTeste("Status do quarto 112 voltou a livre (0)", statusQuarto(112), 0);
+    confereTeste("Liberar o 112 de novo (ja livre)", liberaQuarto(112), 2);
+    confereTeste("Liberar o quarto 999 inexistente", liberaQuarto(999), 1);
+
     //GRAVACAO NO ARQUIVO:
 
     printf("\n--- GRAVACAO ---\n\n");

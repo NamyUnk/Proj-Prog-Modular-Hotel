@@ -120,8 +120,9 @@ todas as hospedagens da lista, com as ativas gravadas com a saída zerada. A lis
 temporária não é alterada.
 */
 
-HP_RET carregaHospedagens(void);
-HP_RET salvaHospedagens(void);
+
+HP_RET loadHospedagem(void);
+HP_RET fechaHospedagem(void);
 
 /*
 FUNÇÕES DE INTERFACE

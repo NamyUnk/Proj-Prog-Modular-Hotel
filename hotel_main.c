@@ -18,7 +18,7 @@ Módulo principal do sistema de gerenciamento de hotel, responsável por interag
 #include <stdlib.h>
 #include <string.h>
 
-//#include "hospedagem.h"
+#include "hospedagem.h"
 #include "hospede.h"
 #include "quarto.h"
 
@@ -40,6 +40,8 @@ int main(void){
     int documento;
     int telefone;
     int codigo;
+    horario_S entrada = {0,0,0,0,0};
+    float valorTotal = 0.0f;
 
     //inicialização:
     printf("\n---INICIALIZANDO SISTEMA---\n\n");
@@ -47,6 +49,7 @@ int main(void){
     printf("\nQUARTOS:");
     check = loadQuarto();
     check = loadHospede(); 
+    check = loadHospedagem();
 
     printf("\nBem vindo ao sistema de gerenciamento de hoteis.\nSelecione qual acaoo gostaria de realizar:\n\n"
         "\tExemplo: ACAO --- BOTAO\n\n"
@@ -228,17 +231,100 @@ int main(void){
 
                 break;
 
-            // case 'h':
-            //     printf("\nRealizar check-in\n");
-            //     break;
+            case 'h':
 
-            // case 'i':
-            //     printf("\nRealizar check-out\n");
-            //     break;
+                do{
+                    printf("\nInforme o codigo do hospede: ");
+                    scanf(" %d", &codigo);
+                    limparEntrada();
+                    printf("\nInforme o numero do quarto: ");
+                    scanf(" %d", &numQuarto);
+                    limparEntrada();
+                    printf("\nInforme a data de entrada (dd/mm/aaaa hh:mm): ");
+                    scanf(" %d/%d/%d %d:%d", &entrada.dia, &entrada.mes, &entrada.ano, &entrada.hora, &entrada.minuto);
+                    limparEntrada();
+                    printf("\nInforme o numero de diarias: ");
+                    scanf(" %d", &modo);
+                    limparEntrada();
+                    check = checkIn(codigo, numQuarto, entrada, modo);
 
-            // case 'j':
-            //     printf("\nListar hospedagens\n");
-            //     break;
+                    if(check == HP_OK)
+                        printf("\nCheck-in realizado com sucesso!\n");
+                    else if(check == HP_HOSPEDE_INEXISTENTE)
+                        printf("\nNao foi encontrado um hospede com o codigo %d.\n", codigo);
+                    else if(check == HP_HOSPEDE_JA_HOSPEDADO)
+                        printf("\nO hospede %d ja possui uma hospedagem ativa.\n", codigo);
+                    else if(check == HP_QUARTO_INEXISTENTE)
+                        printf("\nNao foi encontrado um quarto com o numero %d.\n", numQuarto);
+                    else if(check == HP_QUARTO_OCUPADO)
+                        printf("\nO quarto %d ja esta ocupado.\n", numQuarto);
+                    else if(check == HP_DIARIAS_INVALIDAS)
+                        printf("\nO numero de diarias informado e invalido.\n");
+                    else if(check == HP_DATA_INVALIDA)
+                        printf("\nA data de entrada informada e invalida.\n");
+                    else if(check == HP_LIMITE_ATINGIDO)
+                        printf("\nO limite de hospedagens ativas foi atingido. Nao e possivel realizar check-in.\n");
+                    else
+                        printf("\nOcorreu um erro inesperado. Codigo de retorno: %d\n", check);
+
+                    printf("\nGostaria de realizar outro check-in? (s/n): ");
+                    scanf(" %c", &resposta);
+                    limparEntrada();
+
+                    if(resposta == 's' || resposta == 'S') check = 1; 
+                    else if(resposta == 'n' || resposta == 'N') check = 0;
+                    else{
+                        printf("\nResposta invalida! Encerrando listagem de quartos.\n");
+                        check = 0;
+                    }
+
+                } while(check!=0);
+
+                break;
+
+            case 'i':
+
+                do{
+                    printf("\nInforme o codigo do hospede: ");
+                    scanf(" %d", &codigo);
+                    limparEntrada();
+                    printf("\nInforme o numero do quarto: ");
+                    scanf(" %d", &numQuarto);
+                    limparEntrada();
+                    printf("\nInforme a data de saida (dd/mm/aaaa hh:mm): ");
+                    scanf(" %d/%d/%d %d:%d", &entrada.dia, &entrada.mes, &entrada.ano, &entrada.hora, &entrada.minuto);
+                    limparEntrada();
+                    check = checkOut(codigo, numQuarto, entrada, &valorTotal);
+
+                    if(check == HP_OK)
+                        printf("\nCheck-out realizado com sucesso! Valor total da hospedagem: R$ %.2f\n", valorTotal);
+                    else if(check == HP_HOSPEDAGEM_NAO_ENCONTRADA)
+                        printf("\nNao foi encontrada uma hospedagem ativa para o hospede %d no quarto %d.\n", codigo, numQuarto);
+                    else if(check == HP_SAIDA_ANTES_DA_ENTRADA)
+                        printf("\nData de saida informada e anterior a data de entrada da hospedagem.\n");
+                    else if(check == HP_ERRO_QUARTO)
+                        printf("\nErro ao liberar o quarto. Verifique se o quarto esta cadastrado e tente novamente.\n");
+                    else
+                        printf("\nOcorreu um erro inesperado. Codigo de retorno: %d\n", check);
+
+                    printf("\nGostaria de realizar outro check-out? (s/n): ");
+                    scanf(" %c", &resposta);
+                    limparEntrada();
+
+                    if(resposta == 's' || resposta == 'S') check = 1; 
+                    else if(resposta == 'n' || resposta == 'N') check = 0;
+                    else{
+                        printf("\nResposta invalida! Encerrando listagem de quartos.\n");
+                        check = 0;
+                    }
+
+                } while(check!=0);
+                
+                break;
+
+            case 'j':
+                printf("\nListar hospedagens\n");
+                break;
 
             case 'x':
                 printf("\nSaindo do programa...\n");
@@ -256,5 +342,6 @@ int main(void){
 
     check = fechaQuarto();
     check = fechaHospede(); 
+    check = fechaHospedagem();
     return 0;
 }

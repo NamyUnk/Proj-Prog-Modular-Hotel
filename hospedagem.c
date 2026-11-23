@@ -103,10 +103,6 @@ static void liberaLista(cadeiaHospedagem_S* lista){
         lista = prox;
     }
 }
-
-
-
-
  
 HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     //funçao da checagem desesperada o incio
@@ -121,11 +117,11 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
 
     int disponibilidade= statusQuarto(nQuarto);
     //vê se o quarto ta de boa
-    if (disponibilidade == 1)
+    if (disponibilidade == 3)
         return HP_QUARTO_INEXISTENTE;
     if (disponibilidade != 0)
         return HP_QUARTO_OCUPADO;    
-    if (obtemValorDiaria(nQuarto, &valorDiaria) != 0)
+    if (diariaQuarto(nQuarto, &valorDiaria) != 0)
         return HP_ERRO_QUARTO;
     //vê se as diarias tao de boa
     if (diarias <= 0)
@@ -176,7 +172,7 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     //essa segue o mesmo principio da anterior
     if (consultaHospede(hospede,1) != 0)
         return HP_HOSPEDE_INEXISTENTE;
-    if (statusQuarto(quarto) == 1)
+    if (statusQuarto(quarto) == 3)
         return HP_QUARTO_INEXISTENTE;
 
     h = buscaAtivaPorHospede(hospede);
@@ -187,7 +183,7 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     if (minutoAbsoluto(hora) < minutoAbsoluto(h->entrada))
         return HP_SAIDA_ANTES_DA_ENTRADA;
 
-    if (obtemValorDiaria(quarto, &valorDiaria) != 0)
+    if (diariaQuarto(quarto, &valorDiaria) != 0)
         return HP_ERRO_QUARTO;
 
     
@@ -231,7 +227,9 @@ HP_RET listaHospedagens(HP_STATUS status){
 
      return HP_OK;
 }
-HP_RET salvaHospedagens(void){
+
+HP_RET fechaHospedagem(void){
+  
     FILE* arq;
     cadeiaHospedagem_S* p;
     int campos[N_CAMPOS_INT];
@@ -261,7 +259,9 @@ HP_RET salvaHospedagens(void){
     return HP_OK;
 }
 
-HP_RET carregaHospedagens(void){
+
+HP_RET loadHospedagem(void){
+
     FILE* arq;
     cadeiaHospedagem_S* novaCabeca = NULL;   
     cadeiaHospedagem_S* fim = NULL;          
