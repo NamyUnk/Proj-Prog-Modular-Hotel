@@ -17,7 +17,9 @@ int main(void){
     horario_S diaInvalido  = {31, 2, 2026, 10, 0};   //31 de fevereiro
     horario_S horaInvalida = {20, 11, 2026, 25, 0};  //25 horas
 
-    remove("hospedagem_teste.txt"); //apaga o arquivo de testes anteriores, para comecar do zero
+    int quantidade = 5;
+
+    remove("hospedagem.bin"); //apaga o arquivo de testes anteriores, para comecar do zero
 
     //PREPARACAO: quartos e hospedes usados nos testes
 
@@ -34,7 +36,7 @@ int main(void){
     printf("\n--- LISTA VAZIA ---\n\n");
 
     confereTeste("Listar ativas sem nenhuma hospedagem", listaHospedagens(HP_ATIVA), HP_LISTA_VAZIA);
-    confereTeste("Carregar sem arquivo existente", carregaHospedagens("hospedagem_teste.txt"), HP_ERRO_ARQUIVO);
+    confereTeste("Carregar sem arquivo existente", loadHospedagem(), HP_ERRO_ARQUIVO);
 
     //CHECK-IN INVALIDO:
 
@@ -74,7 +76,7 @@ int main(void){
 
     printf("\n--- GRAVACAO ---\n\n");
 
-    confereTeste("Salvar hospedagens no arquivo", salvaHospedagens("hospedagem_teste.txt"), HP_OK);
+    confereTeste("Salvar hospedagens no arquivo", fechaHospedagem(), HP_OK);
 
     //CHECK-OUT INVALIDO:
 
@@ -115,19 +117,19 @@ int main(void){
     printf("\n--- CARREGAR DO ARQUIVO ---\n\n");
 
     //o arquivo foi salvo quando havia 2 hospedagens ativas e nenhuma encerrada
-    confereTeste("Carregar hospedagens do arquivo", carregaHospedagens("hospedagem_teste.txt"), HP_OK);
+    confereTeste("Carregar hospedagens do arquivo", loadHospedagem(), HP_OK);
     confereTeste("Hospedagens ativas foram recuperadas", listaHospedagens(HP_ATIVA), HP_OK);
     confereTeste("Lista atual foi trocada pela do arquivo", listaHospedagens(HP_ENCERRADA), HP_LISTA_VAZIA);
 
-    //arquivo com uma linha incompleta
-    arquivo = fopen("hospedagem_teste.txt", "w");
-    fprintf(arquivo, "1 0 1 301\n");
+    //arquivo que promete 5 hospedagens mas nao tem nenhuma
+    arquivo = fopen("hospedagem.bin", "wb");
+    fwrite(&quantidade, sizeof(int), 1, arquivo);
     fclose(arquivo);
 
-    confereTeste("Carregar arquivo invalido", carregaHospedagens("hospedagem_teste.txt"), HP_ARQUIVO_INVALIDO);
+    confereTeste("Carregar arquivo invalido", loadHospedagem(), HP_ARQUIVO_INVALIDO);
     confereTeste("Lista nao mudou depois do arquivo invalido", listaHospedagens(HP_ATIVA), HP_OK);
 
-    remove("hospedagem_teste.txt"); //apaga o arquivo criado pelo teste
+    remove("hospedagem.bin"); //apaga o arquivo criado pelo teste
 
     //RESULTADO:
 
