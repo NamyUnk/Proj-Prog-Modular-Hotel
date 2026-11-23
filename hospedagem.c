@@ -6,6 +6,14 @@
 #include "quarto.h"
 #define ARQ_HOSPEDAGENS "hospedagem.bin"
 
+typedef struct horario {
+    int dia;
+    int mes;
+    int ano;
+    int hora;
+    int minuto;
+} horario_S;
+
 typedef struct hospedagem{
 
     int codigo;
@@ -104,7 +112,7 @@ static void liberaLista(cadeiaHospedagem_S* lista){
     }
 }
  
-HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
+HP_RET checkIn(int nHospede, int nQuarto, int dia, int mes, int ano, int hora, int minuto, int diarias){
     //funçao da checagem desesperada o incio
     hospedagem_S* h;
     cadeiaHospedagem_S* no;
@@ -127,6 +135,7 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     if (diarias <= 0)
         return HP_DIARIAS_INVALIDAS;
     //vê se o horario ta boa (meu deus)
+    horario_S entrada = { dia, mes, ano, hora, minuto };
     if (!horarioValido(entrada))
         return HP_DATA_INVALIDA;
     //ve se tem espaço no hotel
@@ -165,7 +174,8 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     return HP_OK;
 }
 
-HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
+HP_RET checkOut(int hospede, int quarto, int dia, int mes, int ano, int hora, int minuto, float* valorTotal){
+    horario_S saida = { dia, mes, ano, hora, minuto };
     hospedagem_S* h;
     float valorDiaria;
     long diarias;
@@ -178,16 +188,16 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     h = buscaAtivaPorHospede(hospede);
     if (h == NULL || h->quarto != quarto)
         return HP_HOSPEDAGEM_NAO_ENCONTRADA;
-    if (!horarioValido(hora))
+    if (!horarioValido(saida))
         return HP_DATA_INVALIDA;
-    if (minutoAbsoluto(hora) < minutoAbsoluto(h->entrada))
+    if (minutoAbsoluto(saida) < minutoAbsoluto(h->entrada))
         return HP_SAIDA_ANTES_DA_ENTRADA;
 
     if (diariaQuarto(quarto, &valorDiaria) != 0)
         return HP_ERRO_QUARTO;
 
     
-    diarias = diaAbsoluto(hora) - diaAbsoluto(h->entrada);
+    diarias = diaAbsoluto(saida) - diaAbsoluto(h->entrada);
     if (diarias < 1)
         diarias = 1;     // minimo de 1 diaria 
 
@@ -196,7 +206,7 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
         return HP_ERRO_QUARTO;
 
     
-    h->saida            = hora;
+    h->saida            = saida;
     h->diarias_efetivas = (int) diarias;
     h->valorTotal       = (float) diarias * valorDiaria;
     h->status           = HP_ENCERRADA;

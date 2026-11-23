@@ -18,8 +18,8 @@ Dados de cada hospedagem:
 - Situação: ativa ou encerrada (HP_STATUS)
 - Código do hóspede (int)
 - Número do quarto (int)
-- Data e horário de entrada (horario_S)
-- Data e horário de saída (horario_S)
+- Data e horário de entrada (int dia, int mes, int ano, int hora, int minuto)
+- Data e horário de saída (int dia, int mes, int ano, int hora, int minuto)
 - Diárias reservadas (int)
 - Diárias efetivas (int)
 - Valor total (float)
@@ -42,14 +42,6 @@ Situação de uma hospedagem: HP_ATIVA (0) ou HP_ENCERRADA (1).
 
 Condições de retorno de todas as funções do módulo.
 */
-
-typedef struct horario {
-    int dia;
-    int mes;
-    int ano;
-    int hora;
-    int minuto;
-} horario_S;
 
 typedef enum {
     HP_ATIVA = 0,
@@ -131,7 +123,7 @@ FUNÇÕES DE INTERFACE
 Registra a entrada de um hóspede em um quarto, criando uma hospedagem ativa (RF10 a RF14).
 
 Parametros: int codHospede (código do hóspede), int numQuarto (número do quarto),
-horario_S entrada (data e horário de entrada), int diarias (quantidade de diárias reservadas)
+int dia, int mes, int ano, int hora, int minuto (data e horário de entrada), int diarias (quantidade de diárias reservadas)
 
 Retorno: HP_RET
 HP_OK = sucesso
@@ -161,7 +153,7 @@ As diárias efetivas são os dias entre entrada e saída, com mínimo de 1 (RN03
 diárias efetivas x valor da diária do quarto (RN04).
 
 Parametros: int codHospede (código do hóspede), int numQuarto (número do quarto),
-horario_S saida (data e horário de saída), float* valorTotal (parâmetro de saída que recebe o
+int dia, int mes, int ano, int hora, int minuto (data e horário de saída), float* valorTotal (parâmetro de saída que recebe o
 valor da estadia; pode ser NULL se o valor não interessar)
 
 Retorno: HP_RET
@@ -201,8 +193,8 @@ Assertivas de saída: as hospedagens na situação informada foram exibidas, ou 
 código de erro foi retornado para que o chamador exiba a mensagem. A lista não é alterada.
 */
 
-HP_RET checkIn(int codHospede, int numQuarto, horario_S entrada, int diarias);
-HP_RET checkOut(int codHospede, int numQuarto, horario_S saida, float* valorTotal);
+HP_RET checkIn(int codHospede, int numQuarto, int dia, int mes, int ano, int hora, int minuto, int diarias);
+HP_RET checkOut(int codHospede, int numQuarto, int dia, int mes, int ano, int hora, int minuto, float* valorTotal);
 HP_RET listaHospedagens(HP_STATUS status);
 
 #endif

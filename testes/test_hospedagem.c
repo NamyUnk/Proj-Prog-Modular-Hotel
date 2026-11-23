@@ -19,12 +19,41 @@ int main(void){
     FILE* arquivo;
     float valor = 0;
 
-    horario_S entrada      = {20, 11, 2026, 14, 0};  //20/11/2026 14:00
-    horario_S saida        = {22, 11, 2026, 11, 0};  //22/11/2026 11:00 (2 diarias)
-    horario_S mesmoDia     = {20, 11, 2026, 18, 0};  //20/11/2026 18:00 (menos de 1 dia)
-    horario_S antes        = {19, 11, 2026, 10, 0};  //antes da entrada
-    horario_S diaInvalido  = {31, 2, 2026, 10, 0};   //31 de fevereiro
-    horario_S horaInvalida = {20, 11, 2026, 25, 0};  //25 horas
+    int diaEntrada = 20;
+    int mesEntrada = 11;
+    int anoEntrada = 2026;
+    int horaEntrada = 14;
+    int minutoEntrada = 0; //20/11/2026 14:00
+
+    int diaSaida = 22;
+    int mesSaida = 11;
+    int anoSaida = 2026;
+    int horaSaida = 11;
+    int minutoSaida = 43; //22/11/2026 11:00 (2 diarias)
+
+    int diaMesmoDia = 20;
+    int mesMesmoDia = 11;
+    int anoMesmoDia = 2026;
+    int horaMesmoDia = 18;
+    int minutoMesmoDia = 55; //20/11/2026 18:55 (menos de 1 dia)
+
+    int diaAntes = 19;
+    int mesAntes = 11;
+    int anoAntes = 2026;
+    int horaAntes = 10;
+    int minutoAntes = 12; //antes da entrada
+
+    int diaDiaInvalido = 31;
+    int mesDiaInvalido = 2;
+    int anoDiaInvalido = 2026;
+    int horaDiaInvalido = 18;
+    int minutoDiaInvalido = 24; //31 de fevereiro
+
+    int diaHoraInvalida = 20;
+    int mesHoraInvalida = 11;
+    int anoHoraInvalida = 2026;
+    int horaHoraInvalida = 25;
+    int minutoHoraInvalida = 0; //25 horas
 
     int quantidade = 5;
 
@@ -51,27 +80,27 @@ int main(void){
 
     printf("\n--- CHECK-IN INVALIDO ---\n\n");
 
-    confereTeste("Check-in de hospede inexistente (99)", checkIn(99, 301, entrada, 2), HP_HOSPEDE_INEXISTENTE);
-    confereTeste("Check-in em quarto inexistente (999)", checkIn(1, 999, entrada, 2), HP_QUARTO_INEXISTENTE);
-    confereTeste("Check-in com 0 diarias", checkIn(1, 301, entrada, 0), HP_DIARIAS_INVALIDAS);
-    confereTeste("Check-in em 31 de fevereiro", checkIn(1, 301, diaInvalido, 2), HP_DATA_INVALIDA);
-    confereTeste("Check-in as 25 horas", checkIn(1, 301, horaInvalida, 2), HP_DATA_INVALIDA);
+    confereTeste("Check-in de hospede inexistente (99)", checkIn(99, 301, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 2), HP_HOSPEDE_INEXISTENTE);
+    confereTeste("Check-in em quarto inexistente (999)", checkIn(1, 999, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 2), HP_QUARTO_INEXISTENTE);
+    confereTeste("Check-in com 0 diarias", checkIn(1, 301, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 0), HP_DIARIAS_INVALIDAS);
+    confereTeste("Check-in em 31 de fevereiro", checkIn(1, 301, diaDiaInvalido, mesDiaInvalido, anoDiaInvalido, horaDiaInvalido, minutoDiaInvalido, 2), HP_DATA_INVALIDA);
+    confereTeste("Check-in as 25 horas", checkIn(1, 301, diaHoraInvalida, mesHoraInvalida, anoHoraInvalida, horaHoraInvalida, minutoHoraInvalida, 2), HP_DATA_INVALIDA);
     confereTeste("Quarto 301 continua livre", statusQuarto(301), 0);
 
     //CHECK-IN VALIDO:
 
     printf("\n--- CHECK-IN VALIDO ---\n\n");
 
-    confereTeste("Check-in da Ana (1) no quarto 301", checkIn(1, 301, entrada, 2), HP_OK);
+    confereTeste("Check-in da Ana (1) no quarto 301", checkIn(1, 301, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 2), HP_OK);
     confereTeste("Quarto 301 ficou ocupado", statusQuarto(301), 1);
-    confereTeste("Check-in do Bruno (2) no quarto 302", checkIn(2, 302, entrada, 3), HP_OK);
+    confereTeste("Check-in do Bruno (2) no quarto 302", checkIn(2, 302, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 3), HP_OK);
 
     //CHECK-IN REPETIDO:
 
     printf("\n--- CHECK-IN REPETIDO ---\n\n");
 
-    confereTeste("Check-in da Carla no 301 ocupado (RN01)", checkIn(3, 301, entrada, 1), HP_QUARTO_OCUPADO);
-    confereTeste("Check-in da Ana ja hospedada (RN02)", checkIn(1, 303, entrada, 1), HP_HOSPEDE_JA_HOSPEDADO);
+    confereTeste("Check-in da Carla no 301 ocupado (RN01)", checkIn(3, 301, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 1), HP_QUARTO_OCUPADO);
+    confereTeste("Check-in da Ana ja hospedada (RN02)", checkIn(1, 303, diaEntrada, mesEntrada, anoEntrada, horaEntrada, minutoEntrada, 1), HP_HOSPEDE_JA_HOSPEDADO);
 
     //LISTAGEM:
 
@@ -91,24 +120,24 @@ int main(void){
 
     printf("\n--- CHECK-OUT INVALIDO ---\n\n");
 
-    confereTeste("Check-out de hospede inexistente (99)", checkOut(99, 301, saida, &valor), HP_HOSPEDE_INEXISTENTE);
-    confereTeste("Check-out em quarto inexistente (999)", checkOut(1, 999, saida, &valor), HP_QUARTO_INEXISTENTE);
-    confereTeste("Check-out da Carla, que nao esta hospedada", checkOut(3, 301, saida, &valor), HP_HOSPEDAGEM_NAO_ENCONTRADA);
-    confereTeste("Check-out da Ana no quarto errado (302)", checkOut(1, 302, saida, &valor), HP_HOSPEDAGEM_NAO_ENCONTRADA);
-    confereTeste("Check-out em 31 de fevereiro", checkOut(1, 301, diaInvalido, &valor), HP_DATA_INVALIDA);
-    confereTeste("Check-out antes da entrada", checkOut(1, 301, antes, &valor), HP_SAIDA_ANTES_DA_ENTRADA);
+    confereTeste("Check-out de hospede inexistente (99)", checkOut(99, 301, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, &valor), HP_HOSPEDE_INEXISTENTE);
+    confereTeste("Check-out em quarto inexistente (999)", checkOut(1, 999, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, &valor), HP_QUARTO_INEXISTENTE);
+    confereTeste("Check-out da Carla, que nao esta hospedada", checkOut(3, 301, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, &valor), HP_HOSPEDAGEM_NAO_ENCONTRADA);
+    confereTeste("Check-out da Ana no quarto errado (302)", checkOut(1, 302, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, &valor), HP_HOSPEDAGEM_NAO_ENCONTRADA);
+    confereTeste("Check-out em 31 de fevereiro", checkOut(1, 301, diaDiaInvalido, mesDiaInvalido, anoDiaInvalido, horaDiaInvalido, minutoDiaInvalido, &valor), HP_DATA_INVALIDA);
+    confereTeste("Check-out antes da entrada", checkOut(1, 301, diaAntes, mesAntes, anoAntes, horaAntes, minutoAntes, &valor), HP_SAIDA_ANTES_DA_ENTRADA);
     confereTeste("Quarto 301 continua ocupado", statusQuarto(301), 1);
 
     //CHECK-OUT VALIDO:
 
     printf("\n--- CHECK-OUT VALIDO ---\n\n");
 
-    confereTeste("Check-out da Ana no 301", checkOut(1, 301, saida, &valor), HP_OK);
+    confereTeste("Check-out da Ana no 301", checkOut(1, 301, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, &valor), HP_OK);
     confereTeste("Valor total = 2 diarias x R$ 200 = R$ 400 (RN03)", valor == 400, 1);
     confereTeste("Quarto 301 voltou a ficar livre", statusQuarto(301), 0);
-    confereTeste("Check-out da Ana de novo", checkOut(1, 301, saida, &valor), HP_HOSPEDAGEM_NAO_ENCONTRADA);
+    confereTeste("Check-out da Ana de novo", checkOut(1, 301, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, &valor), HP_HOSPEDAGEM_NAO_ENCONTRADA);
 
-    confereTeste("Check-out do Bruno no mesmo dia", checkOut(2, 302, mesmoDia, &valor), HP_OK);
+    confereTeste("Check-out do Bruno no mesmo dia", checkOut(2, 302, diaMesmoDia, mesMesmoDia, anoMesmoDia, horaMesmoDia, minutoMesmoDia, &valor), HP_OK);
     confereTeste("Cobra no minimo 1 diaria: R$ 350", valor == 350, 1);
 
     confereTeste("Listar hospedagens encerradas", listaHospedagens(HP_ENCERRADA), HP_OK);
@@ -118,8 +147,8 @@ int main(void){
 
     printf("\n--- NOVA HOSPEDAGEM DEPOIS DO CHECK-OUT ---\n\n");
 
-    confereTeste("Check-in da Carla no 301 liberado", checkIn(3, 301, saida, 1), HP_OK);
-    confereTeste("Check-in da Ana de novo (no 303)", checkIn(1, 303, saida, 1), HP_OK);
+    confereTeste("Check-in da Carla no 301 liberado", checkIn(3, 301, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, 1), HP_OK);
+    confereTeste("Check-in da Ana de novo (no 303)", checkIn(1, 303, diaSaida, mesSaida, anoSaida, horaSaida, minutoSaida, 1), HP_OK);
 
     //CARREGAR DO ARQUIVO:
 

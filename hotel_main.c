@@ -12,6 +12,8 @@ MAIN
 Autora do módulo: Rafaela Gomes 2310112
 
 Módulo principal do sistema de gerenciamento de hotel, responsável por interagir com o usuário e chamar as funções dos módulos hospede, quarto e hospedagem.
+
+Para compilar: gcc -Wall quarto.c hospede.c hospedagem.c hotel_main.c -o hotel_main
 */
 
 #include <stdio.h> 
@@ -40,7 +42,7 @@ int main(void){
     ull documento;
     int telefone;
     int codigo;
-    horario_S entrada = {0,0,0,0,0};
+    int dia,mes,ano,hora,minuto,diarias = 0;
     float valorTotal = 0.0f;
 
     //inicialização:
@@ -50,7 +52,10 @@ int main(void){
     check = loadHospede(); 
     check = loadHospedagem();
 
-    printf("\nBem vindo ao sistema de gerenciamento de hoteis.\nSelecione qual acaoo gostaria de realizar:\n\n"
+    char opcao = ' ';
+
+    do {
+        printf("\nBem vindo ao sistema de gerenciamento de hoteis.\nSelecione qual acaoo gostaria de realizar:\n\n"
         "\tExemplo: ACAO --- BOTAO\n\n"
         "\tCLIENTES / HOSPEDES\n\n\t\tCadastrar novo hospede --- a\n\t\tAlterar dados de hospede --- b\n"
         "\t\tConsultar dados de hospede --- c\n\t\tListar todos os hospedes --- d\n\n"
@@ -58,9 +63,6 @@ int main(void){
         "\tHOSPEDAGENS / RESERVAS\n\n\t\tRealizar check-in --- h\n\t\tRealizar check-out --- i\n\t\tListar hospedagens --- j\n\n"
         "\tSAIR DO PROGRAMA --- x\n");
 
-    char opcao = ' ';
-
-    do {
         printf("\nDigite a opcao desejada: ");
         scanf(" %c", &opcao);
         limparEntrada();
@@ -240,12 +242,12 @@ int main(void){
                     scanf(" %d", &numQuarto);
                     limparEntrada();
                     printf("\nInforme a data de entrada (dd/mm/aaaa hh:mm): ");
-                    scanf(" %d/%d/%d %d:%d", &entrada.dia, &entrada.mes, &entrada.ano, &entrada.hora, &entrada.minuto);
+                    scanf(" %d/%d/%d %d:%d", &dia, &mes, &ano, &hora, &minuto);
                     limparEntrada();
                     printf("\nInforme o numero de diarias: ");
-                    scanf(" %d", &modo);
+                    scanf(" %d", &diarias);
                     limparEntrada();
-                    check = checkIn(codigo, numQuarto, entrada, modo);
+                    check = checkIn(codigo, numQuarto, dia, mes, ano, hora, minuto, diarias);
 
                     if(check == HP_OK)
                         printf("\nCheck-in realizado com sucesso!\n");
@@ -291,9 +293,9 @@ int main(void){
                     scanf(" %d", &numQuarto);
                     limparEntrada();
                     printf("\nInforme a data de saida (dd/mm/aaaa hh:mm): ");
-                    scanf(" %d/%d/%d %d:%d", &entrada.dia, &entrada.mes, &entrada.ano, &entrada.hora, &entrada.minuto);
+                    scanf(" %d/%d/%d %d:%d", &dia, &mes, &ano, &hora, &minuto);
                     limparEntrada();
-                    check = checkOut(codigo, numQuarto, entrada, &valorTotal);
+                    check = checkOut(codigo, numQuarto, dia, mes, ano, hora, minuto, &valorTotal);
 
                     if(check == HP_OK)
                         printf("\nCheck-out realizado com sucesso! Valor total da hospedagem: R$ %.2f\n", valorTotal);

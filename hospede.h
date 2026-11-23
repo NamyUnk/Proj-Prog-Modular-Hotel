@@ -12,7 +12,7 @@ utilizando funções de interface.
 Dados de cada hóspede:
 - Código de identificação (int)
 - Nome (string)
-- Documento (int)
+- Documento (unsigned long long)
 - Telefone (int)
 */
 
