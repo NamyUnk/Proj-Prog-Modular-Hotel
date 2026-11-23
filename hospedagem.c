@@ -4,6 +4,7 @@
 #include "hospedagem.h"
 #include "hospede.h"
 #include "quarto.h"
+#define ARQ_HOSPEDAGENS "hospedagem.bin"
 
 typedef struct hospedagem{
 
@@ -230,21 +231,29 @@ HP_RET listaHospedagens(HP_STATUS status){
 
      return HP_OK;
 }
-
-HP_RET salvaHospedagens(const char* nomeArquivo){
+HP_RET salvaHospedagens(void){
     FILE* arq;
     cadeiaHospedagem_S* p;
-    hospedagem_S* h;
+    int campos[N_CAMPOS_INT];
 
-    arq = fopen(nomeArquivo, "w");
+    /* "wb": o b (binario) e essencial no Windows, que em modo texto troca
+     * todo byte 10 (\n) por 13 10 (\r\n) e estragaria os numeros gravados */
+    arq = fopen(ARQ_HOSPEDAGENS, "wb");
     if (arq == NULL)return HP_ERRO_ARQUIVO;
+
+    /* primeiro a quantidade, para a leitura saber quantas hospedagens esperar */
+    if (fwrite(&totalHospedagens, sizeof(int), 1, arq) != 1) {
+        fclose(arq);
+        return HP_ERRO_ARQUIVO;
+    }
+
     for (p = cabeca; p != NULL; p = p->prox) {
-        h = p->hospedagem;
-        fprintf(arq, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %.2f\n",
-                h->codigo, (int) h->status, h->hospede, h->quarto,
-                h->entrada.dia, h->entrada.mes, h->entrada.ano, h->entrada.hora, h->entrada.minuto,
-                h->saida.dia, h->saida.mes, h->saida.ano, h->saida.hora, h->saida.minuto,
-                h->diarias_reservadas, h->diarias_efetivas, h->valorTotal);
+        empacota(p->hospedagem, campos);
+        if (fwrite(campos, sizeof(int), N_CAMPOS_INT, arq) != N_CAMPOS_INT
+            || fwrite(&p->hospedagem->valorTotal, sizeof(float), 1, arq) != 1) {
+            fclose(arq);
+            return HP_ERRO_ARQUIVO;
+        }
     }
 
     if (fclose(arq) != 0)
@@ -252,37 +261,38 @@ HP_RET salvaHospedagens(const char* nomeArquivo){
     return HP_OK;
 }
 
-HP_RET carregaHospedagens(const char* nomeArquivo){
+HP_RET carregaHospedagens(void){
     FILE* arq;
     cadeiaHospedagem_S* novaCabeca = NULL;   
     cadeiaHospedagem_S* fim = NULL;          
     cadeiaHospedagem_S* no;
     hospedagem_S lida;
     hospedagem_S* h;
-    int status, lidos, total = 0;
+    int campos[N_CAMPOS_INT];
+    int quantidade, i;
 
-    arq = fopen(nomeArquivo, "r");
+    arq = fopen(ARQ_HOSPEDAGENS, "rb");
     if (arq == NULL)return HP_ERRO_ARQUIVO;
 
-    /* fscanf devolve qts leu: 17 = linha completa */
-    while ((lidos = fscanf(arq, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %f",
-                           &lida.codigo, &status, &lida.hospede, &lida.quarto,
-                           &lida.entrada.dia, &lida.entrada.mes, &lida.entrada.ano,
-                           &lida.entrada.hora, &lida.entrada.minuto,
-                           &lida.saida.dia, &lida.saida.mes, &lida.saida.ano,
-                           &lida.saida.hora, &lida.saida.minuto,
-                           &lida.diarias_reservadas, &lida.diarias_efetivas,
-                           &lida.valorTotal)) == 17) {
+    /* fread devolve quantos itens leu: se for menos que o pedido, o arquivo acabou antes */
+    if (fread(&quantidade, sizeof(int), 1, arq) != 1
+        || quantidade < 0 || quantidade > LIM_HOSPEDAGENS) {
+        fclose(arq);
+        return HP_ARQUIVO_INVALIDO;
+    }
 
-        /* confere se a linha faz sentido antes de aceitar */
-        if ((status != HP_ATIVA && status != HP_ENCERRADA)
-            || !horarioValido(lida.entrada)
-            || (status == HP_ENCERRADA && !horarioValido(lida.saida))
-            || total >= LIM_HOSPEDAGENS) {
-            lidos = 0;                       /* marca como invalido e para */
+    for (i = 0; i < quantidade; i++) {
+        if (fread(campos, sizeof(int), N_CAMPOS_INT, arq) != N_CAMPOS_INT
+            || fread(&lida.valorTotal, sizeof(float), 1, arq) != 1)
+            break;                           /* arquivo cortado no meio */
+
+        /* confere se a hospedagem faz sentido antes de aceitar */
+        if (campos[1] != HP_ATIVA && campos[1] != HP_ENCERRADA)
             break;
-        }
-        lida.status = (HP_STATUS) status;
+        desempacota(campos, &lida);
+        if (!horarioValido(lida.entrada)
+            || (lida.status == HP_ENCERRADA && !horarioValido(lida.saida)))
+            break;
 
         h  = malloc(sizeof(hospedagem_S));
         no = malloc(sizeof(cadeiaHospedagem_S));
@@ -302,20 +312,19 @@ HP_RET carregaHospedagens(const char* nomeArquivo){
         else
             fim->prox = no;
         fim = no;
-        total++;
     }
 
-    fclose(arq);
-
-    /* EOF = leu ate o fim sem problemas; qualquer outro valor = parou numa linha ruim */
-    if (lidos != EOF) {
+    /* tem que ter lido todas as hospedagens prometidas, e depois delas o arquivo tem que acabar */
+    if (i < quantidade || fgetc(arq) != EOF) {
+        fclose(arq);
         liberaLista(novaCabeca);             /* descarta o que foi lido; a lista atual fica intacta */
         return HP_ARQUIVO_INVALIDO;
     }
+    fclose(arq);
 
     /* deu tudo certo: troca a lista antiga pela nova */
     liberaLista(cabeca);
     cabeca = novaCabeca;
-    totalHospedagens = total;
+    totalHospedagens = quantidade;
     return HP_OK;
 }
