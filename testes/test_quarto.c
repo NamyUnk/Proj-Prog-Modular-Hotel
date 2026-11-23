@@ -1,3 +1,11 @@
+/*
+Compilar:
+gcc test_quarto.c teste.c ..\quarto.c -o test_quarto
+
+Rodar o teste:
+.\test_quarto
+*/
+
 #include <stdio.h>
 
 #include "teste.h"

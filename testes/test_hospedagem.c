@@ -1,3 +1,11 @@
+/*
+Compilar:
+gcc test_hospedagem.c teste.c ..\hospedagem.c -o test_hospedagem
+
+Rodar o teste:
+.\test_hospedagem
+*/
+
 #include <stdio.h>
 
 #include "teste.h"
