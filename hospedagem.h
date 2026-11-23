@@ -80,19 +80,20 @@ FUNÇÕES DE INICIALIZAÇÃO E FINALIZAÇÃO
 
 --- carregaHospedagens
 
-Lê o arquivo de texto gravado por salvaHospedagens e substitui a lista encadeada temporária
-de hospedagens pelo conteúdo dele, na mesma ordem em que foi salvo.
+Carrega as hospedagens do arquivo binário "hospedagem.bin" para a lista encadeada temporária,
+na mesma ordem em que foram salvas. O arquivo é aberto e fechado pelo próprio módulo.
 
-Parametros: const char* nomeArquivo (nome do arquivo a ser lido)
+Parametros: nenhum
 
 Retorno: HP_RET
 HP_OK = sucesso
 HP_ERRO_ARQUIVO = arquivo não pôde ser aberto (por exemplo, ainda não existe)
-HP_ARQUIVO_INVALIDO = arquivo com linha incompleta ou dados inválidos
+HP_ARQUIVO_INVALIDO = arquivo incompleto, com dados a mais ou com dados inválidos
 HP_ERRO_MEMORIA = erro de alocação de memória
 
-Assertivas de entrada: nomeArquivo não é nulo. O módulo Quarto foi carregado a partir do
-arquivo salvo junto com este, para que os quartos das hospedagens ativas já estejam ocupados.
+Assertivas de entrada: o módulo Quarto foi carregado a partir do arquivo salvo junto com este,
+para que os quartos das hospedagens ativas já estejam ocupados. Se o arquivo não existir, a lista
+encadeada temporária de hospedagens permanece como está (vazia, no início do programa).
 
 Assertivas de saída: em caso de sucesso, a lista encadeada temporária contém exatamente as
 hospedagens do arquivo e o contador de hospedagens foi atualizado, de modo que o próximo
@@ -102,23 +103,26 @@ intacta. O status dos quartos não é alterado.
 
 --- salvaHospedagens
 
-Grava todas as hospedagens da lista encadeada temporária (ativas e encerradas) no arquivo de
-texto informado, uma por linha. Se o arquivo já existir, é sobrescrito.
+Salva todas as hospedagens da lista encadeada temporária (ativas e encerradas) no arquivo binário
+"hospedagem.bin". Se o arquivo já existir, é sobrescrito. O arquivo é aberto e fechado pelo
+próprio módulo.
 
-Parametros: const char* nomeArquivo (nome do arquivo a ser gravado)
+Parametros: nenhum
 
 Retorno: HP_RET
 HP_OK = sucesso
 HP_ERRO_ARQUIVO = arquivo não pôde ser aberto ou gravado
 
-Assertivas de entrada: nomeArquivo não é nulo.
+Assertivas de entrada: nenhuma. Se a lista estiver vazia, é gravado um arquivo sem hospedagens.
 
-Assertivas de saída: em caso de sucesso, o arquivo contém todas as hospedagens da lista, com as
-hospedagens ativas gravadas com a saída zerada. A lista encadeada temporária não é alterada.
+Assertivas de saída: em caso de sucesso, o arquivo contém a quantidade de hospedagens seguida de
+todas as hospedagens da lista, com as ativas gravadas com a saída zerada. A lista encadeada
+temporária não é alterada.
 */
 
-HP_RET loadHospedagem(const char* nomeArquivo);
-HP_RET fechaHospedagem(const char* nomeArquivo);
+
+HP_RET loadHospedagem(void);
+HP_RET fechaHospedagem(void);
 
 /*
 FUNÇÕES DE INTERFACE
