@@ -1,9 +1,9 @@
 /*
-Compilar:
-gcc test_hospede.c teste.c ..\hospede.c -o test_hospede
+COMO RODAR (dentro da pasta testes):
+    gcc test_hospede.c teste.c ..\hospede.c -o test_hospede
+    .\test_hospede
 
-Rodar o teste:
-.\test_hospede
+Resultado esperado: === HOSPEDE: 31 testes, 0 falhas ===
 */
 
 #include <stdio.h>
@@ -92,7 +92,6 @@ int main(void){
     freopen("entrada_teste.txt", "r", stdin);
 
     confereTeste("Alterar hospede 1 (novo nome e telefone)", alteraHospede(1,1), 0);
-    fclose(stdin); //fecha o arquivo de respostas (no Windows nao da para apagar arquivo aberto)
     remove("entrada_teste.txt");
 
     //GRAVACAO NO ARQUIVO:
