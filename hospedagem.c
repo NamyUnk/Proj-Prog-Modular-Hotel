@@ -113,7 +113,7 @@ HP_RET checkIn(int nHospede, int nQuarto, horario_S entrada, int diarias){
     cadeiaHospedagem_S* no;
     float valorDiaria = 0.0f;
     //ve se o hospede tá de boa
-    if(consultaHospede(nHospede) != 0)
+    if(consultaHospede(nHospede,1) != 0)
         return HP_HOSPEDE_INEXISTENTE;
     if (buscaAtivaPorHospede(nHospede) != NULL)
         return HP_HOSPEDE_JA_HOSPEDADO; 
@@ -173,7 +173,7 @@ HP_RET checkOut(int hospede, int quarto, horario_S hora, float* valorTotal){
     float valorDiaria;
     long diarias;
     //essa segue o mesmo principio da anterior
-    if (consultaHospede(hospede) != 0)
+    if (consultaHospede(hospede,1) != 0)
         return HP_HOSPEDE_INEXISTENTE;
     if (statusQuarto(quarto) == 1)
         return HP_QUARTO_INEXISTENTE;
