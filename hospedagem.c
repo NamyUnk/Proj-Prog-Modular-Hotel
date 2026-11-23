@@ -227,6 +227,49 @@ HP_RET listaHospedagens(HP_STATUS status){
 
      return HP_OK;
 }
+#define ARQ_HOSPEDAGENS "hospedagem.bin"
+#define N_CAMPOS_INT 16
+
+/* Copia os campos inteiros da hospedagem para um vetor, na ordem do arquivo */
+static void empacota(const hospedagem_S* h, int campos[]){
+    campos[0]  = h->codigo;
+    campos[1]  = (int) h->status;
+    campos[2]  = h->hospede;
+    campos[3]  = h->quarto;
+    campos[4]  = h->entrada.dia;
+    campos[5]  = h->entrada.mes;
+    campos[6]  = h->entrada.ano;
+    campos[7]  = h->entrada.hora;
+    campos[8]  = h->entrada.minuto;
+    campos[9]  = h->saida.dia;
+    campos[10] = h->saida.mes;
+    campos[11] = h->saida.ano;
+    campos[12] = h->saida.hora;
+    campos[13] = h->saida.minuto;
+    campos[14] = h->diarias_reservadas;
+    campos[15] = h->diarias_efetivas;
+}
+
+/* Caminho inverso: monta a hospedagem a partir do vetor lido do arquivo */
+static void desempacota(const int campos[], hospedagem_S* h){
+    h->codigo             = campos[0];
+    h->status             = (HP_STATUS) campos[1];
+    h->hospede            = campos[2];
+    h->quarto             = campos[3];
+    h->entrada.dia        = campos[4];
+    h->entrada.mes        = campos[5];
+    h->entrada.ano        = campos[6];
+    h->entrada.hora       = campos[7];
+    h->entrada.minuto     = campos[8];
+    h->saida.dia          = campos[9];
+    h->saida.mes          = campos[10];
+    h->saida.ano          = campos[11];
+    h->saida.hora         = campos[12];
+    h->saida.minuto       = campos[13];
+    h->diarias_reservadas = campos[14];
+    h->diarias_efetivas   = campos[15];
+}
+
 
 HP_RET fechaHospedagem(void){
   

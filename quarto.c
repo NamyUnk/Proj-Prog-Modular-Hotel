@@ -395,7 +395,6 @@ int listaQuartos(int modo){
             if(pAux->quarto->status == 0){
 
                 char *tipo;
-                char *status;
 
                 switch (pAux->quarto->tipo){
 
@@ -470,8 +469,8 @@ int listaQuartos(int modo){
             printf("\nNúmero: %d\tTipo: %s\tValor: R$ %.2f\tStatus: %s\n",pAux->quarto->num,tipo,pAux->quarto->valor,status);
             pAux = pAux->prox;
         }
-        return 0;
     }
+    return 0;
 }
 
 int liberaQuarto(int num){

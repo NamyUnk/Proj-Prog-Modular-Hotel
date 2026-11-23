@@ -274,7 +274,7 @@ int main(void){
                     if(resposta == 's' || resposta == 'S') check = 1; 
                     else if(resposta == 'n' || resposta == 'N') check = 0;
                     else{
-                        printf("\nResposta invalida! Encerrando listagem de quartos.\n");
+                        printf("\nResposta invalida! Encerrando check-in.\n");
                         check = 0;
                     }
 
@@ -314,7 +314,7 @@ int main(void){
                     if(resposta == 's' || resposta == 'S') check = 1; 
                     else if(resposta == 'n' || resposta == 'N') check = 0;
                     else{
-                        printf("\nResposta invalida! Encerrando listagem de quartos.\n");
+                        printf("\nResposta invalida! Encerrando check-out.\n");
                         check = 0;
                     }
 
@@ -323,7 +323,26 @@ int main(void){
                 break;
 
             case 'j':
-                printf("\nListar hospedagens\n");
+
+                do{
+                    printf("\nListar hospedagens ativas (0) ou encerradas (1)? ");
+                    scanf(" %d", &modo);
+                    limparEntrada();
+                    check = listaHospedagens(modo);
+
+                    printf("\nGostaria de listar novamente? (s/n): ");
+                    scanf(" %c", &resposta);
+                    limparEntrada();
+
+                    if(resposta == 's' || resposta == 'S') check = 1; 
+                    else if(resposta == 'n' || resposta == 'N') check = 0;
+                    else{
+                        printf("\nResposta invalida! Encerrando listagem de hospedagens.\n");
+                        check = 0;
+                    }
+                    
+                } while(check!=0);
+
                 break;
 
             case 'x':
