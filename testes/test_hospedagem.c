@@ -1,9 +1,10 @@
 /*
-Compilar:
-gcc test_hospedagem.c teste.c ..\hospedagem.c -o test_hospedagem
-
-Rodar o teste:
-.\test_hospedagem
+COMO RODAR (dentro da pasta testes):
+    gcc test_hospedagem.c teste.c ..\hospedagem.c ..\quarto.c ..\hospede.c -o test_hospedagem
+    .\test_hospedagem
+    
+Resultado esperado: === HOSPEDAGEM: 39 testes, 0 falhas ===
+Obs: compila junto com quarto.c e hospede.c porque o Hospedagem usa os dois.
 */
 
 #include <stdio.h>

@@ -1,9 +1,9 @@
 /*
-Compilar:
-gcc test_quarto.c teste.c ..\quarto.c -o test_quarto
+COMO RODAR (dentro da pasta testes):
+    gcc test_quarto.c teste.c ..\quarto.c -o test_quarto
+    .\test_quarto
 
-Rodar o teste:
-.\test_quarto
+Resultado esperado: === QUARTO: 38 testes, 0 falhas ===
 */
 
 #include <stdio.h>
