@@ -3,7 +3,7 @@ COMO RODAR (dentro da pasta testes):
     gcc test_hospede.c teste.c ..\hospede.c -o test_hospede
     .\test_hospede
 
-Resultado esperado: === HOSPEDE: 31 testes, 0 falhas ===
+Resultado esperado: === HOSPEDE: 34 testes, 0 falhas ===
 */
 
 #include <stdio.h>
@@ -65,6 +65,13 @@ int main(void){
     confereTeste("Consultar documento 999 inexistente", consultaHospede(999,2), 1);
     confereTeste("Consultar com tipo invalido (3)", consultaHospede(1,3), 2);
 
+    //VERIFICAR HOSPEDE:
+
+    printf("\n--- VERIFICAR HOSPEDE ---\n\n");
+
+    confereTeste("Verificar hospede 1 existente", verificaHospede(1), 0);
+    confereTeste("Verificar hospede 99 inexistente", verificaHospede(99), 1);
+
     //OBTER NOME:
 
     printf("\n--- OBTER NOME ---\n\n");
@@ -94,18 +101,6 @@ int main(void){
     confereTeste("Alterar hospede 1 (novo nome e telefone)", alteraHospede(1,1), 0);
     remove("entrada_teste.txt");
 
-    //GRAVACAO NO ARQUIVO:
-
-    printf("\n--- GRAVACAO ---\n\n");
-
-    confereTeste("Salvar hospedes no arquivo", fechaHospede(), 0);
-
-    arquivo = fopen("hospede.bin", "rb");
-    confereTeste("Arquivo hospede.bin foi criado", arquivo != NULL, 1);
-    if(arquivo) fclose(arquivo);
-
-    remove("hospede.bin"); //apaga o arquivo criado pelo teste
-
     //LIMITE DE HOSPEDES:
 
     printf("\n--- LIMITE DE HOSPEDES (%d) ---\n\n", LIM_HOSPEDES);
@@ -117,6 +112,20 @@ int main(void){
 
     confereTeste("Cadastrar hospedes ate o limite", cadastrados, LIM_HOSPEDES - 3);
     confereTeste("Cadastrar alem do limite", cadastraHospede(5000,"Extra",5000,2100), 3);
+
+    //GRAVACAO NO ARQUIVO (fechaHospede salva e libera a memoria):
+
+    printf("\n--- GRAVACAO E LIBERACAO ---\n\n");
+
+    confereTeste("Salvar hospedes no arquivo", fechaHospede(), 0);
+
+    arquivo = fopen("hospede.bin", "rb");
+    confereTeste("Arquivo hospede.bin foi criado", arquivo != NULL, 1);
+    if(arquivo) fclose(arquivo);
+
+    confereTeste("Lista foi liberada depois de fechar", verificaHospede(1), 1);
+
+    remove("hospede.bin"); //apaga o arquivo criado pelo teste
 
     //RESULTADO:
 

@@ -361,6 +361,19 @@ int fechaHospede() {
 
     fclose(arquivo);
 
+    //libera a memoria da lista (housekeeping)
+    atual = hospedes;
+    while(atual){
+        cadeiaHospede* prox = atual->prox;
+        if(atual->hospede){
+            free(atual->hospede->nome);
+            free(atual->hospede);
+        }
+        free(atual);
+        atual = prox;
+    }
+    hospedes = NULL;
+
     printf("\nHospedes salvos com sucesso!\n");
 
     return 0;
